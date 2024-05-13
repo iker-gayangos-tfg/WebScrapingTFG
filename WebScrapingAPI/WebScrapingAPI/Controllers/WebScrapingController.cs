@@ -42,7 +42,36 @@ namespace WebScrapingAPI.Controllers
                     }
                 }
 
-                return Ok();
+                //Obtener Ids de todos los investigadores
+
+                List<string> idsInvestigadores = new List<string>();
+
+                foreach (var urlDepartamento in urlDepartamentos)
+                {
+                    driver.Navigate().GoToUrl(urlDepartamento);
+                    var buttonsMas = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver más...");
+                    while (buttonsMas.Count() > 0)
+                    {
+                        foreach (var buttonMas in buttonsMas)
+                        {
+                            buttonMas.Click();
+                        }
+                        await Task.Delay(1000);
+                        buttonsMas = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver más...");
+                        Console.WriteLine(buttonsMas);
+                    };
+                    var investigadoresDepartamento = driver.FindElements(By.ClassName("unidad-miembros__item"));
+
+                    foreach (var investigadorDepartamento in investigadoresDepartamento)
+                    {
+                        idsInvestigadores.Add(investigadorDepartamento.GetAttribute("data-id").ToString());
+                    }
+                }
+
+
+
+                return Ok(idsInvestigadores);
+
             }
             catch (Exception ex)
             {

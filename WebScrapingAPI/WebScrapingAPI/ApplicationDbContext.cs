@@ -6,6 +6,7 @@ namespace WebScrapingAPI
 {
     public class ApplicationDbContext : DbContext
     {
+        public DbSet<Investigador> Investigadores { get; set; }
         public DbSet<Departamento> Departamentos { get; set; }
 
         public DbSet<Area> Areas { get; set; }

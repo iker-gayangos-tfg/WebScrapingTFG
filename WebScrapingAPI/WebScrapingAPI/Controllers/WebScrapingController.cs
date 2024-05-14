@@ -68,10 +68,22 @@ namespace WebScrapingAPI.Controllers
                     }
                 }
 
+                foreach (var idInvestigador in idsInvestigadores)
+                {
+                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/34954/detalle");
 
+                    Investigador investigador = new Investigador();
 
-                return Ok(idsInvestigadores);
+                    var nombreInvestigador = driver.FindElement(By.ClassName("investigador-header__nombre")).Text.ToString();
+                    investigador.Nombre = nombreInvestigador.Split("\r\n")[0];
+                    investigador.Apellidos = nombreInvestigador.Split("\r\n")[1];
 
+                    investigador.IdInvestigador = idInvestigador;
+
+                    
+                }
+
+                return Ok();
             }
             catch (Exception ex)
             {

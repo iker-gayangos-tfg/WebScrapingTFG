@@ -106,6 +106,25 @@ namespace WebScrapingAPI.Controllers
                         var departamentoBd = await _context.Departamentos.FirstAsync(x => x.Name == nombreDepartamento);
                         investigador.FoDepartamento = departamentoBd.Id;
                     }
+
+                    //Facultades
+                    var facultades = datosInvestigador.Where(x => x.Text.Contains("Facultad/Centro"));
+                    foreach (var facultad in facultades)
+                    {
+                        var nombreFacultad = facultad.FindElement(By.TagName("a")).Text.ToString();
+
+                        var isFacultadBd = await _context.Facultades.AnyAsync(x => x.Name == nombreFacultad);
+                        if (!isFacultadBd)
+                        {
+                            Facultad facultadToBd = new Facultad();
+                            facultadToBd.Name = nombreFacultad;
+                            facultadToBd.Url = facultad.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                            _context.Facultades.Add(facultadToBd);
+                            await _context.SaveChangesAsync();
+                        }
+                        var facultadBd = await _context.Facultades.FirstAsync(x => x.Name == nombreFacultad);
+                        investigador.FoFacultad = facultadBd.Id;
+                    }
                 }
 
 

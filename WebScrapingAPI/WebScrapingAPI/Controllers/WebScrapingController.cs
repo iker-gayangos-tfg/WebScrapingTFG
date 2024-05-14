@@ -144,6 +144,13 @@ namespace WebScrapingAPI.Controllers
                         var areaBd = await _context.Areas.FirstAsync(x => x.Name == nombreArea);
                         investigador.FoArea = areaBd.Id;
                     }
+
+                    //Email
+                    var emails = datosInvestigador.Where(x => x.Text.Contains("Email:"));
+                    foreach (var email in emails)
+                    {
+                        investigador.Email = email.FindElement(By.TagName("a")).Text.ToString();
+                    }
                 }
 
 

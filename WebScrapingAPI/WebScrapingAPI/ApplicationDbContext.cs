@@ -7,6 +7,8 @@ namespace WebScrapingAPI
     public class ApplicationDbContext : DbContext
     {
         public DbSet<Departamento> Departamentos { get; set; }
+
+        public DbSet<Area> Areas { get; set; }
         public DbSet<Facultad> Facultades { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
@@ -29,6 +31,13 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Investigador_Facultad]");
+
+                entity.HasOne(d => d.Area)
+                    .WithMany(p => p.Investigadores)
+                    .HasForeignKey(d => d.FoArea)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Investigador_Area]");
             });
         }
     }

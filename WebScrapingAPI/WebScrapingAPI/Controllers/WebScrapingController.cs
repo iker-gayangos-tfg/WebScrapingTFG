@@ -17,7 +17,12 @@ namespace WebScrapingAPI.Controllers
     [ApiController]
     public class WebScrapingController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
 
+        public WebScrapingController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
         public async Task<IActionResult> Scraping()
@@ -80,8 +85,29 @@ namespace WebScrapingAPI.Controllers
 
                     investigador.IdInvestigador = idInvestigador;
 
-                    
+                    var datosInvestigador = driver.FindElements(By.ClassName("investigador-detalles__detalle"));
+
+
+                    //Departamentos
+                    var departamentos = datosInvestigador.Where(x => x.Text.Contains("Departamento"));
+                    foreach (var departamento in departamentos)
+                    {
+                        var nombreDepartamento = departamento.FindElement(By.TagName("a")).Text.ToString();
+
+                        var isDepartamentoBd = await _context.Departamentos.AnyAsync(x => x.Name == nombreDepartamento);
+                        if (!isDepartamentoBd)
+                        {
+                            Departamento departamentoToBd = new Departamento();
+                            departamentoToBd.Name = nombreDepartamento;
+                            departamentoToBd.Url = departamento.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                            _context.Departamentos.Add(departamentoToBd);
+                            await _context.SaveChangesAsync();
+                        }
+                        var departamentoBd = await _context.Departamentos.FirstAsync(x => x.Name == nombreDepartamento);
+                        investigador.FoDepartamento = departamentoBd.Id;
+                    }
                 }
+
 
                 return Ok();
             }

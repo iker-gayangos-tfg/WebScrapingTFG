@@ -89,7 +89,7 @@ namespace WebScrapingAPI.Controllers
 
 
                     //Departamentos
-                    var departamentos = datosInvestigador.Where(x => x.Text.Contains("Departamento"));
+                    var departamentos = datosInvestigador.Where(x => x.Text.Contains("Departamento:"));
                     foreach (var departamento in departamentos)
                     {
                         var nombreDepartamento = departamento.FindElement(By.TagName("a")).Text.ToString();
@@ -125,7 +125,27 @@ namespace WebScrapingAPI.Controllers
                         var facultadBd = await _context.Facultades.FirstAsync(x => x.Name == nombreFacultad);
                         investigador.FoFacultad = facultadBd.Id;
                     }
+
+                    //Areas
+                    var areas = datosInvestigador.Where(x => x.Text.Contains("Área:"));
+                    foreach (var area in areas)
+                    {
+                        var nombreArea = area.FindElement(By.TagName("a")).Text.ToString();
+
+                        var isAreaBd = await _context.Areas.AnyAsync(x => x.Name == nombreArea);
+                        if (!isAreaBd)
+                        {
+                            Area areaToBd = new Area();
+                            areaToBd.Name = nombreArea;
+                            areaToBd.Url = area.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                            _context.Areas.Add(areaToBd);
+                            await _context.SaveChangesAsync();
+                        }
+                        var areaBd = await _context.Areas.FirstAsync(x => x.Name == nombreArea);
+                        investigador.FoArea = areaBd.Id;
+                    }
                 }
+
 
 
                 return Ok();

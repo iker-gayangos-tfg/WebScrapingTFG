@@ -8,6 +8,6 @@
 
         public string? Url { get; set; }
 
-        public ICollection<Investigador>? Investigadores { get; set; }
+        public ICollection<InvestigadorFacultad>? InvestigadoresFacultades { get; set; }
     }
 }

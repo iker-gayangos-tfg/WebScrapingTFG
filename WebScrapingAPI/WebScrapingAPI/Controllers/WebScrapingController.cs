@@ -168,6 +168,28 @@ namespace WebScrapingAPI.Controllers
                         await _context.SaveChangesAsync();
                     }
 
+                    ////Programas de doctorado
+                    var programasDoctorado = datosInvestigador.Where(x => x.Text.Contains("Programa de Doctorado:"));
+                    foreach (var programaDoctorado in programasDoctorado)
+                    {
+                        var nombreProgramaDoctorado = programaDoctorado.FindElement(By.TagName("a")).Text.ToString();
+
+                        var isProgramaDoctoradoBd = await _context.ProgramasDoctorado.AnyAsync(x => x.Name == nombreProgramaDoctorado);
+                        if (!isProgramaDoctoradoBd)
+                        {
+                            ProgramaDoctorado programaDoctoradoToBd = new ProgramaDoctorado();
+                            programaDoctoradoToBd.Name = nombreProgramaDoctorado;
+                            programaDoctoradoToBd.Url = programaDoctorado.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                            _context.ProgramasDoctorado.Add(programaDoctoradoToBd);
+                            await _context.SaveChangesAsync();
+                        }
+                        var programaDoctoradoBd = await _context.ProgramasDoctorado.FirstAsync(x => x.Name == nombreProgramaDoctorado);
+                        InvestigadorProgramaDoctorado investigadorProgramaDoctoradoToBd = new InvestigadorProgramaDoctorado();
+                        investigadorProgramaDoctoradoToBd.FoInvestigador = investigadorBd.Id;
+                        investigadorProgramaDoctoradoToBd.FoProgramaDoctorado = programaDoctoradoBd.Id;
+                        _context.InvestigadoresProgramasDoctorado.Add(investigadorProgramaDoctoradoToBd);
+                        await _context.SaveChangesAsync();
+                    }
 
 
                 }

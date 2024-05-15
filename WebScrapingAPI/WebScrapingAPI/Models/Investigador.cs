@@ -20,5 +20,7 @@
         public ICollection<InvestigadorArea>? InvestigadoresAreas { get; set; }
 
         public ICollection<InvestigadorProgramaDoctorado>? InvestigadoresProgramasDoctorado { get; set; }
+
+        public ICollection<InvestigadorGrupoInvestigacion>? InvestigadoresGruposInvestigacion { get; set; }
     }
 }

@@ -75,7 +75,9 @@ namespace WebScrapingAPI.Controllers
 
                 foreach (var idInvestigador in idsInvestigadores)
                 {
-                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/34954/detalle");
+                    var isInvestigadorBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador);
+                    if (isInvestigadorBd) { continue; }
+                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + idInvestigador + "/detalle");
 
                     Investigador investigador = new Investigador();
 
@@ -106,6 +108,19 @@ namespace WebScrapingAPI.Controllers
                         var departamentoBd = await _context.Departamentos.FirstAsync(x => x.Name == nombreDepartamento);
                         investigador.FoDepartamento = departamentoBd.Id;
                     }
+
+                    //Email
+                    var emails = datosInvestigador.Where(x => x.Text.Contains("Email:"));
+                    foreach (var email in emails)
+                    {
+                        investigador.Email = email.FindElement(By.TagName("a")).Text.ToString();
+                    }
+
+            
+                    _context.Investigadores.Add(investigador);
+                    await _context.SaveChangesAsync();
+
+                    var investigadorBd = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigador);
 
                     //Facultades
                     var facultades = datosInvestigador.Where(x => x.Text.Contains("Facultad/Centro"));

@@ -15,10 +15,8 @@
         public int? FoDepartamento { get; set; }
         public Departamento? Departamento { get; set; }
 
-        public int? FoFacultad { get; set; }
-        public Facultad? Facultad { get; set; }
+        public ICollection<InvestigadorFacultad>? InvestigadoresFacultades { get; set; }
 
-        public int? FoArea { get; set; }
-        public Area? Area { get; set; }
+        public ICollection<InvestigadorArea>? InvestigadoresAreas { get; set; }
     }
 }

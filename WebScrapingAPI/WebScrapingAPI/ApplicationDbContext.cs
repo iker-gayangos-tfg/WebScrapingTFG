@@ -7,10 +7,16 @@ namespace WebScrapingAPI
     public class ApplicationDbContext : DbContext
     {
         public DbSet<Investigador> Investigadores { get; set; }
+
         public DbSet<Departamento> Departamentos { get; set; }
 
-        public DbSet<Area> Areas { get; set; }
         public DbSet<Facultad> Facultades { get; set; }
+
+        public DbSet<InvestigadorFacultad> InvestigadoresFacultades { get; set; }
+
+        public DbSet<Area> Areas { get; set; }
+
+        public DbSet<InvestigadorArea> InvestigadoresAreas { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -25,20 +31,40 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Investigador_Departamento]");
+            });
+
+            modelBuilder.Entity<InvestigadorFacultad>(entity =>
+            {
+                entity.HasOne(d => d.Investigador)
+                    .WithMany(p => p.InvestigadoresFacultades)
+                    .HasForeignKey(d => d.FoInvestigador)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Investigador]");
 
                 entity.HasOne(d => d.Facultad)
-                    .WithMany(p => p.Investigadores)
+                    .WithMany(p => p.InvestigadoresFacultades)
                     .HasForeignKey(d => d.FoFacultad)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Investigador_Facultad]");
+                    .HasConstraintName("[FK_Facultad]");
+            });
+
+            modelBuilder.Entity<InvestigadorArea>(entity =>
+            {
+                entity.HasOne(d => d.Investigador)
+                    .WithMany(p => p.InvestigadoresAreas)
+                    .HasForeignKey(d => d.FoInvestigador)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Investigador]");
 
                 entity.HasOne(d => d.Area)
-                    .WithMany(p => p.Investigadores)
+                    .WithMany(p => p.InvestigadoresAreas)
                     .HasForeignKey(d => d.FoArea)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Investigador_Area]");
+                    .HasConstraintName("[FK_Area]");
             });
         }
     }

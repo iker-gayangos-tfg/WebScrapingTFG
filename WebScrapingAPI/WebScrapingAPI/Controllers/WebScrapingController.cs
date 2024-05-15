@@ -138,7 +138,11 @@ namespace WebScrapingAPI.Controllers
                             await _context.SaveChangesAsync();
                         }
                         var facultadBd = await _context.Facultades.FirstAsync(x => x.Name == nombreFacultad);
-                        investigador.FoFacultad = facultadBd.Id;
+                        InvestigadorFacultad investigadorFacultadToBd = new InvestigadorFacultad();
+                        investigadorFacultadToBd.FoInvestigador = investigadorBd.Id;
+                        investigadorFacultadToBd.FoFacultad = facultadBd.Id;
+                        _context.InvestigadoresFacultades.Add(investigadorFacultadToBd);
+                        await _context.SaveChangesAsync();
                     }
 
                     //Areas
@@ -157,12 +161,16 @@ namespace WebScrapingAPI.Controllers
                             await _context.SaveChangesAsync();
                         }
                         var areaBd = await _context.Areas.FirstAsync(x => x.Name == nombreArea);
-                        investigador.FoArea = areaBd.Id;
+                        InvestigadorArea investigadorAreaToBd = new InvestigadorArea();
+                        investigadorAreaToBd.FoInvestigador = investigadorBd.Id;
+                        investigadorAreaToBd.FoArea = areaBd.Id;
+                        _context.InvestigadoresAreas.Add(investigadorAreaToBd);
+                        await _context.SaveChangesAsync();
                     }
 
-                    //Email
-                    var emails = datosInvestigador.Where(x => x.Text.Contains("Email:"));
-                    foreach (var email in emails)
+
+
+                }
                     {
                         investigador.Email = email.FindElement(By.TagName("a")).Text.ToString();
                     }

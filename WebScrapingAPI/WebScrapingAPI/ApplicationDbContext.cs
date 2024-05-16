@@ -25,6 +25,8 @@ namespace WebScrapingAPI
         public DbSet<GrupoInvestigacion> GruposInvestigacion { get; set; }
 
         public DbSet<InvestigadorGrupoInvestigacion> InvestigadoresGruposInvestigacion { get; set; }
+
+        public DbSet<Publicacion> Publicaciones { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }

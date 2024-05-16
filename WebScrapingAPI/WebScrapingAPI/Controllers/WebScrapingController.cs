@@ -215,6 +215,113 @@ namespace WebScrapingAPI.Controllers
                         await _context.SaveChangesAsync();
                     }
 
+
+                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + idInvestigador + "/publicaciones");
+
+                    var buttonsTodoPublicaciones = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver todos");
+                    while (buttonsTodoPublicaciones.Count() > 0)
+                    {
+                        foreach (var buttonTodoPublicaciones in buttonsTodoPublicaciones)
+                        {
+                            buttonTodoPublicaciones.Click();
+                        }
+                        await Task.Delay(1000);
+                        buttonsTodoPublicaciones = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver todos");
+                    };
+
+                    //Obtener Url Publicaciones
+                    var divPublicaciones = driver.FindElements(By.ClassName("investigador-docs__item"));
+                    List<string> urlListPublicaciones = new List<string>();
+                    //Publicaciones
+                    foreach (var publicacion in divPublicaciones)
+                    {
+                        var publicacionUrl = publicacion.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                        urlListPublicaciones.Add(publicacionUrl);
+                    }
+
+                    //Bucle de todas las publicaciones del investigador
+                    foreach (var publicacionUrl in urlListPublicaciones)
+                    {
+                        var isPublicacionBd = await _context.Publicaciones.AnyAsync(x => x.Url == publicacionUrl);
+                        if (isPublicacionBd) { continue; }
+
+                        driver.Navigate().GoToUrl(publicacionUrl);
+
+                        Publicacion publicacionToBd = new Publicacion();
+                        var titlePublication = driver.FindElement(By.ClassName("documento-detalle__titulo")).Text.ToString();
+                        publicacionToBd.Title = titlePublication;
+                        publicacionToBd.Url = publicacionUrl;
+
+                        var publication_info = driver.FindElements(By.ClassName("documento-detalle__localizacion"));
+
+                        //Revista
+                        var magazinePublication = publication_info.FirstOrDefault(x => x.Text.Contains("Revista:"));
+                        if (magazinePublication != null)
+                        {
+                            publicacionToBd.Magazine = magazinePublication.Text.Split(": ")[1];
+                        }
+
+                        //Libro
+                        var bookPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Libro:"));
+                        if (bookPublication != null)
+                        {
+                            publicacionToBd.Book = bookPublication.Text.Split(": ")[1];
+                        }
+
+                        //ISSN
+                        var issnPublication = publication_info.FirstOrDefault(x => x.Text.Contains("ISSN:"));
+                        if (issnPublication != null)
+                        {
+                            publicacionToBd.ISSN = issnPublication.Text.Split(": ")[1];
+                        }
+
+                        //Publication year
+                        var yearPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Año de publicación:"));
+                        if (yearPublication != null)
+                        {
+                            publicacionToBd.Year = yearPublication.Text.Split(": ")[1];
+                        }
+
+                        //Volumen
+                        var volumenPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Volumen:"));
+                        if (volumenPublication != null)
+                        {
+                            publicacionToBd.Volumen = volumenPublication.Text.Split(": ")[1];
+                        }
+
+                        //Numero
+                        var numberPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Número"));
+                        if (numberPublication != null)
+                        {
+                            publicacionToBd.Number = numberPublication.Text.Split(": ")[1];
+                        }
+
+                        //Paginas
+                        var pagesPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Páginas"));
+                        if (pagesPublication != null)
+                        {
+                            publicacionToBd.Pages = pagesPublication.Text.Split(": ")[1];
+                        }
+
+                        //Tipo
+                        var typePublication = publication_info.FirstOrDefault(x => x.Text.Contains("Tipo"));
+                        if (typePublication != null)
+                        {
+                            publicacionToBd.Type = typePublication.Text.Split(": ")[1];
+                        }
+
+                        //Resumen
+                        var resumenPublication = driver.FindElements(By.ClassName("documento-detalle__resumen"));
+                        if (resumenPublication != null && resumenPublication.Count > 0)
+                        {
+                            publicacionToBd.Summary = resumenPublication[0].FindElement(By.TagName("p")).Text.ToString();
+                        }
+
+                        _context.Publicaciones.Add(publicacionToBd);
+                        await _context.SaveChangesAsync();
+                        var publicacionBd = await _context.Publicaciones.FirstAsync(x => x.Url == publicacionUrl);
+                    }
+                }
                 }
                     {
                         investigador.Email = email.FindElement(By.TagName("a")).Text.ToString();

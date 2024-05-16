@@ -25,5 +25,7 @@
         public string? Type { get; set; }
 
         public string? Summary { get; set; }
+
+        public ICollection<InvestigadorPublicacion>? InvestigadoresPublicaciones { get; set; }
     }
 }

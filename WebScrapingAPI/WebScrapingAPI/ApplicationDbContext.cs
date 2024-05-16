@@ -27,6 +27,8 @@ namespace WebScrapingAPI
         public DbSet<InvestigadorGrupoInvestigacion> InvestigadoresGruposInvestigacion { get; set; }
 
         public DbSet<Publicacion> Publicaciones { get; set; }
+
+        public DbSet<InvestigadorPublicacion> InvestigadoresPublicaciones { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -109,6 +111,24 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_GrupoInvestigacion]");
+            });
+
+
+            modelBuilder.Entity<InvestigadorPublicacion>(entity =>
+            {
+                entity.HasOne(d => d.Investigador)
+                    .WithMany(p => p.InvestigadoresPublicaciones)
+                    .HasForeignKey(d => d.FoInvestigador)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Investigador]");
+
+                entity.HasOne(d => d.Publicacion)
+                    .WithMany(p => p.InvestigadoresPublicaciones)
+                    .HasForeignKey(d => d.FoPublicacion)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Publicacion]");
             });
         }
     }

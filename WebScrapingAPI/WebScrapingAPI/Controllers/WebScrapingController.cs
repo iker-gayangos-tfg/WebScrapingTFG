@@ -34,7 +34,8 @@ namespace WebScrapingAPI.Controllers
                 List<string> urlDepartamentos = new List<string>();
 
 
-                //Obtener url de departamentos
+                //Obtener url de facultades
+
                 driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores");
 
                 var divFacultades = driver.FindElements(By.CssSelector(".investigadores-explorar__category-content")).FirstOrDefault(x => x.Text.Contains("Facultades y Centros de investigación"));
@@ -168,7 +169,7 @@ namespace WebScrapingAPI.Controllers
                         await _context.SaveChangesAsync();
                     }
 
-                    ////Programas de doctorado
+                    //Programas de doctorado
                     var programasDoctorado = datosInvestigador.Where(x => x.Text.Contains("Programa de Doctorado:"));
                     foreach (var programaDoctorado in programasDoctorado)
                     {
@@ -191,6 +192,28 @@ namespace WebScrapingAPI.Controllers
                         await _context.SaveChangesAsync();
                     }
 
+                    //Grupos de investigación
+                    var gruposInvestigacion = datosInvestigador.Where(x => x.Text.Contains("Grupo de investigación:"));
+                    foreach (var grupoInvestigacion in gruposInvestigacion)
+                    {
+                        var nombreGrupoInvestigacion = grupoInvestigacion.FindElement(By.TagName("a")).Text.ToString();
+
+                        var isGrupoInvestigacionBd = await _context.GruposInvestigacion.AnyAsync(x => x.Name == nombreGrupoInvestigacion);
+                        if (!isGrupoInvestigacionBd)
+                        {
+                            GrupoInvestigacion grupoinvestigacionToBd = new GrupoInvestigacion();
+                            grupoinvestigacionToBd.Name = nombreGrupoInvestigacion;
+                            grupoinvestigacionToBd.Url = grupoInvestigacion.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                            _context.GruposInvestigacion.Add(grupoinvestigacionToBd);
+                            await _context.SaveChangesAsync();
+                        }
+                        var grupoInvestigacionBd = await _context.GruposInvestigacion.FirstAsync(x => x.Name == nombreGrupoInvestigacion);
+                        InvestigadorGrupoInvestigacion investigadorGrupoInvestigacionToBd = new InvestigadorGrupoInvestigacion();
+                        investigadorGrupoInvestigacionToBd.FoInvestigador = investigadorBd.Id;
+                        investigadorGrupoInvestigacionToBd.FoGrupoInvestigacion = grupoInvestigacionBd.Id;
+                        _context.InvestigadoresGruposInvestigacion.Add(investigadorGrupoInvestigacionToBd);
+                        await _context.SaveChangesAsync();
+                    }
 
                 }
                     {

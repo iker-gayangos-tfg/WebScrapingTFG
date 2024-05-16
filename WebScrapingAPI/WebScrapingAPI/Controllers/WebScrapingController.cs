@@ -76,11 +76,15 @@ namespace WebScrapingAPI.Controllers
 
                 foreach (var idInvestigador in idsInvestigadores)
                 {
-                    var isInvestigadorBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador);
-                    if (isInvestigadorBd) { continue; }
+                    var isInvestigadorCompletoBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador && x.Nombre != null);
+                    if (isInvestigadorCompletoBd) { continue; }
                     driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + idInvestigador + "/detalle");
-
                     Investigador investigador = new Investigador();
+                    var isInvestigadorParcialBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador && x.Nombre == null);
+                    if (isInvestigadorParcialBd) 
+                    {
+                        investigador = _context.Investigadores.First(x => x.IdInvestigador == idInvestigador);
+                    }
 
                     var nombreInvestigador = driver.FindElement(By.ClassName("investigador-header__nombre")).Text.ToString();
                     investigador.Nombre = nombreInvestigador.Split("\r\n")[0];
@@ -111,14 +115,21 @@ namespace WebScrapingAPI.Controllers
                     }
 
                     //Email
-                    var emails = datosInvestigador.Where(x => x.Text.Contains("Email:"));
-                    foreach (var email in emails)
+                    var email = datosInvestigador.FirstOrDefault(x => x.Text.Contains("Email:"));
+                    if(email != null)
                     {
                         investigador.Email = email.FindElement(By.TagName("a")).Text.ToString();
                     }
 
-            
-                    _context.Investigadores.Add(investigador);
+                    //Guardado o actualizacion de los datos de Investigador
+                    if(isInvestigadorParcialBd) 
+                    {
+                        _context.Investigadores.Update(investigador);
+                    }
+                    else
+                    {
+                        _context.Investigadores.Add(investigador);
+                    }
                     await _context.SaveChangesAsync();
 
                     var investigadorBd = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigador);
@@ -320,6 +331,58 @@ namespace WebScrapingAPI.Controllers
                         _context.Publicaciones.Add(publicacionToBd);
                         await _context.SaveChangesAsync();
                         var publicacionBd = await _context.Publicaciones.FirstAsync(x => x.Url == publicacionUrl);
+
+
+                        //Obtener autores de publicacion y asignar
+                        var divAutores = driver.FindElements(By.CssSelector(".documento__autor"));
+                        foreach (var divAutor in divAutores)
+                        {
+                            var spanAutor = divAutor.FindElements(By.TagName("span"));
+                            if (spanAutor.Count > 0)
+                            {
+                                foreach (var span in spanAutor)
+                                {
+                                    var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.Nombre == span.Text.ToString());
+                                    if (!isInvestigadorBdTmp)
+                                    {
+                                        Investigador investigadorToBd = new Investigador();
+                                        investigadorToBd.Nombre = span.Text.ToString();
+                                        _context.Investigadores.Add(investigadorToBd);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                    var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.Nombre == span.Text.ToString());
+                                    InvestigadorPublicacion investigadorPublicacionToBd = new InvestigadorPublicacion();
+                                    investigadorPublicacionToBd.FoInvestigador = investigadorBdTmp.Id;
+                                    investigadorPublicacionToBd.FoPublicacion = publicacionBd.Id;
+                                    _context.InvestigadoresPublicaciones.Add(investigadorPublicacionToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
+                            else
+                            {
+                                var asAutor = divAutor.FindElements(By.TagName("a")).FirstOrDefault(x => x.Text.Contains("."));
+                                if (asAutor != null)
+                                {
+                                    var urlInvestigador = asAutor.GetAttribute("href").ToString();
+                                    var tmpUrl = urlInvestigador.Split("investigadores/")[1];
+                                    var idInvestigadorTmp = tmpUrl.Split("/detall")[0];
+                                    var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                    if (!isInvestigadorBdTmp)
+                                    {
+                                        Investigador investigadorToBd = new Investigador();
+                                        investigadorToBd.IdInvestigador = idInvestigadorTmp;
+                                        _context.Investigadores.Add(investigadorToBd);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                    var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                    InvestigadorPublicacion investigadorPublicacionToBd = new InvestigadorPublicacion();
+                                    investigadorPublicacionToBd.FoInvestigador = investigadorBdTmp.Id;
+                                    investigadorPublicacionToBd.FoPublicacion = publicacionBd.Id;
+                                    _context.InvestigadoresPublicaciones.Add(investigadorPublicacionToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
+                        }
                     }
                 }
                 }

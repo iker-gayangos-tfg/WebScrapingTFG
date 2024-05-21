@@ -74,17 +74,27 @@ namespace WebScrapingAPI.Controllers
                     }
                 }
 
+                //Bucle para añadir todos los investigadores registrados a la base de datos
                 foreach (var idInvestigador in idsInvestigadores)
                 {
-                    var isInvestigadorCompletoBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador && x.Nombre != null);
-                    if (isInvestigadorCompletoBd) { continue; }
+                    var isInvestigadorBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador);
+                    if (isInvestigadorBd) { continue; }
+                    Investigador investigador = new Investigador();
+                    investigador.IdInvestigador = idInvestigador;
+                    _context.Investigadores.Add(investigador);
+                    await _context.SaveChangesAsync();
+                }
+
+
+
+                //Bucle de todos los investigadores
+                foreach (var idInvestigador in idsInvestigadores)
+                {
+                    var isInvestigadorBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador && x.Nombre != null);
+                    if (isInvestigadorBd) { continue; }
                     driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + idInvestigador + "/detalle");
                     Investigador investigador = new Investigador();
-                    var isInvestigadorParcialBd = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigador && x.Nombre == null);
-                    if (isInvestigadorParcialBd) 
-                    {
-                        investigador = _context.Investigadores.First(x => x.IdInvestigador == idInvestigador);
-                    }
+                    investigador = _context.Investigadores.First(x => x.IdInvestigador == idInvestigador);
 
                     var nombreInvestigador = driver.FindElement(By.ClassName("investigador-header__nombre")).Text.ToString();
                     investigador.Nombre = nombreInvestigador.Split("\r\n")[0];
@@ -116,20 +126,14 @@ namespace WebScrapingAPI.Controllers
 
                     //Email
                     var email = datosInvestigador.FirstOrDefault(x => x.Text.Contains("Email:"));
-                    if(email != null)
+                    if (email != null)
                     {
                         investigador.Email = email.FindElement(By.TagName("a")).Text.ToString();
                     }
 
-                    //Guardado o actualizacion de los datos de Investigador
-                    if(isInvestigadorParcialBd) 
-                    {
-                        _context.Investigadores.Update(investigador);
-                    }
-                    else
-                    {
-                        _context.Investigadores.Add(investigador);
-                    }
+                    //Actualizacion de los datos de Investigador
+                    _context.Investigadores.Update(investigador);
+
                     await _context.SaveChangesAsync();
 
                     var investigadorBd = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigador);
@@ -243,6 +247,7 @@ namespace WebScrapingAPI.Controllers
                     //Obtener Url Publicaciones
                     var divPublicaciones = driver.FindElements(By.ClassName("investigador-docs__item"));
                     List<string> urlListPublicaciones = new List<string>();
+
                     //Publicaciones
                     foreach (var publicacion in divPublicaciones)
                     {

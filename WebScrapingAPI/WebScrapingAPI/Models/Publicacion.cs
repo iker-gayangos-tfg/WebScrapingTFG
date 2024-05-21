@@ -12,7 +12,13 @@
 
         public string? Book { get; set; }
 
+        public string? BookCollection { get; set; }
+
+        public string? Editorial { get; set; }
+
         public string? ISSN { get; set; }
+
+        public string? ISBN { get; set; }
 
         public string? Year { get; set; }
 

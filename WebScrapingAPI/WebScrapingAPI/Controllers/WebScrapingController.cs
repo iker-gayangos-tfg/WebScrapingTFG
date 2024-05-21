@@ -267,58 +267,79 @@ namespace WebScrapingAPI.Controllers
 
                         //Revista
                         var magazinePublication = publication_info.FirstOrDefault(x => x.Text.Contains("Revista:"));
-                        if (magazinePublication != null)
+                        if (magazinePublication != null && magazinePublication.Text.Split("Revista: ").Count() > 1)
                         {
-                            publicacionToBd.Magazine = magazinePublication.Text.Split(": ")[1];
+                            publicacionToBd.Magazine = magazinePublication.Text.Split("Revista: ")[1];
                         }
 
                         //Libro
                         var bookPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Libro:"));
-                        if (bookPublication != null)
+                        if (bookPublication != null && bookPublication.Text.Split("Libro: ").Count() > 1)
                         {
-                            publicacionToBd.Book = bookPublication.Text.Split(": ")[1];
+                            publicacionToBd.Book = bookPublication.Text.Split("Libro: ")[1];
+                        }
+
+                        //Coleccion de libros
+                        var bookCollectionPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Colección de libros:"));
+                        if (bookCollectionPublication != null && bookCollectionPublication.Text.Split("Colección de libros: ").Count() > 1)
+                        {
+                            publicacionToBd.BookCollection = bookCollectionPublication.Text.Split("Colección de libros: ")[1];
+                        }
+
+                        //Editorial
+                        var editorialPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Editorial:"));
+                        if (editorialPublication != null && editorialPublication.Text.Split("Editorial: ").Count() > 1)
+                        {
+                            publicacionToBd.Editorial = editorialPublication.Text.Split("Editorial: ")[1];
                         }
 
                         //ISSN
                         var issnPublication = publication_info.FirstOrDefault(x => x.Text.Contains("ISSN:"));
-                        if (issnPublication != null)
+                        if (issnPublication != null && issnPublication.Text.Split("ISSN: ").Count() > 1)
                         {
-                            publicacionToBd.ISSN = issnPublication.Text.Split(": ")[1];
+                            publicacionToBd.ISSN = issnPublication.Text.Split("ISSN: ")[1];
+                        }
+
+                        //ISBN
+                        var isbnPublication = publication_info.FirstOrDefault(x => x.Text.Contains("ISBN:"));
+                        if (isbnPublication != null && isbnPublication.Text.Split("ISBN: ").Count() > 1)
+                        {
+                            publicacionToBd.ISBN = isbnPublication.Text.Split("ISBN: ")[1];
                         }
 
                         //Publication year
                         var yearPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Año de publicación:"));
-                        if (yearPublication != null)
+                        if (yearPublication != null && yearPublication.Text.Split("Año de publicación: ").Count() > 1)
                         {
-                            publicacionToBd.Year = yearPublication.Text.Split(": ")[1];
+                            publicacionToBd.Year = yearPublication.Text.Split("Año de publicación: ")[1];
                         }
 
                         //Volumen
                         var volumenPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Volumen:"));
-                        if (volumenPublication != null)
+                        if (volumenPublication != null && volumenPublication.Text.Split("Volumen: ").Count() > 1)
                         {
-                            publicacionToBd.Volumen = volumenPublication.Text.Split(": ")[1];
+                            publicacionToBd.Volumen = volumenPublication.Text.Split("Volumen: ")[1];
                         }
 
                         //Numero
-                        var numberPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Número"));
-                        if (numberPublication != null)
+                        var numberPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Número:"));
+                        if (numberPublication != null && numberPublication.Text.Split("Número: ").Count() > 1)
                         {
-                            publicacionToBd.Number = numberPublication.Text.Split(": ")[1];
+                            publicacionToBd.Number = numberPublication.Text.Split("Número: ")[1];
                         }
 
                         //Paginas
-                        var pagesPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Páginas"));
-                        if (pagesPublication != null)
+                        var pagesPublication = publication_info.FirstOrDefault(x => x.Text.Contains("Páginas:"));
+                        if (pagesPublication != null && pagesPublication.Text.Split("Páginas: ").Count() > 1)
                         {
-                            publicacionToBd.Pages = pagesPublication.Text.Split(": ")[1];
+                            publicacionToBd.Pages = pagesPublication.Text.Split("Páginas: ")[1];
                         }
 
                         //Tipo
-                        var typePublication = publication_info.FirstOrDefault(x => x.Text.Contains("Tipo"));
-                        if (typePublication != null)
+                        var typePublication = publication_info.FirstOrDefault(x => x.Text.Contains("Tipo:"));
+                        if (typePublication != null && typePublication.Text.Split("Tipo: ").Count() > 1)
                         {
-                            publicacionToBd.Type = typePublication.Text.Split(": ")[1];
+                            publicacionToBd.Type = typePublication.Text.Split("Tipo: ")[1];
                         }
 
                         //Resumen
@@ -360,7 +381,7 @@ namespace WebScrapingAPI.Controllers
                             }
                             else
                             {
-                                var asAutor = divAutor.FindElements(By.TagName("a")).FirstOrDefault(x => x.Text.Contains("."));
+                                var asAutor = divAutor.FindElements(By.TagName("a")).FirstOrDefault(x => x.Text.Contains(" "));
                                 if (asAutor != null)
                                 {
                                     var urlInvestigador = asAutor.GetAttribute("href").ToString();

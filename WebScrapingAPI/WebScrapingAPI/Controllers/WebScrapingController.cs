@@ -411,13 +411,114 @@ namespace WebScrapingAPI.Controllers
                         }
                     }
                 }
-                }
+        public class FacultaPrueba
+        {
+            public string? Nombre { get; set; }
+            public string? Url { get; set; }
+
+        };
+
+        public class InvestigadorPrueba
+        {
+            public string? Id { get; set; }
+            public string? Facu { get; set; }
+
+        };
+
+        public class InvestigadorMal
+        {
+            public string? Id { get; set; }
+            public string? Url { get; set; }
+            public string? FacultadCorrecta { get; set; }
+            public string? FacultadEsta { get; set; }
+
+        };
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerInvestigadoresFacultadMal()
+        {
+            try
+            {
+                IWebDriver driver = new ChromeDriver();
+
+                List<FacultaPrueba> facultadesPrueba = new List<FacultaPrueba>();
+
+                //Obtener url de Facultades
+
+                driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores");
+
+                var divFacultades = driver.FindElements(By.CssSelector(".investigadores-explorar__category-content")).FirstOrDefault(x => x.Text.Contains("Facultades y Centros de investigación"));
+                if (divFacultades != null)
+                {
+                    var facultades = divFacultades.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                    foreach (var facultad in facultades)
                     {
-                        investigador.Email = email.FindElement(By.TagName("a")).Text.ToString();
+                        FacultaPrueba facultadPrueba = new FacultaPrueba();
+                        facultadPrueba.Nombre = facultad.FindElement(By.TagName("a")).Text;
+                        facultadPrueba.Url = facultad.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                        facultadesPrueba.Add(facultadPrueba);
+                    }
+                }
+
+                //Obtener Ids de todos los investigadores
+                List<InvestigadorPrueba> investigadoresPrueba = new List<InvestigadorPrueba>();
+
+                foreach (var facultadPrueba in facultadesPrueba)
+                {
+                    driver.Navigate().GoToUrl(facultadPrueba.Url);
+                    var buttonsMas = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver más...");
+                    while (buttonsMas.Count() > 0)
+                    {
+                        foreach (var buttonMas in buttonsMas)
+                        {
+                            buttonMas.Click();
+                        }
+                        await Task.Delay(1000);
+                        buttonsMas = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver más...");
+                    };
+                    var investigadoresFacultad = driver.FindElements(By.ClassName("unidad-miembros__item"));
+
+                    foreach (var investigadorFacultad in investigadoresFacultad)
+                    {
+                        InvestigadorPrueba investigadorPrueba = new InvestigadorPrueba();
+                        investigadorPrueba.Id = investigadorFacultad.GetAttribute("data-id").ToString();
+                        investigadorPrueba.Facu = facultadPrueba.Nombre;
+                        investigadoresPrueba.Add(investigadorPrueba);
                     }
                 }
 
 
+                List<InvestigadorMal> investigadoresMal = new List<InvestigadorMal>();
+
+
+                foreach (var investigadorPrueba in investigadoresPrueba)
+                {
+                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + investigadorPrueba.Id + "/detalle");
+
+                    var datosInvestigador = driver.FindElements(By.ClassName("investigador-detalles__detalle"));
+
+                    var facultades = datosInvestigador.Where(x => x.Text.Contains("Facultad/Centro"));
+                    foreach (var facultad in facultades)
+                    {
+                        var nombreFacultad = facultad.FindElement(By.TagName("a")).Text.ToString();
+                        if (nombreFacultad != investigadorPrueba.Facu)
+                        {
+                            InvestigadorMal investigadorMal = new InvestigadorMal();
+                            investigadorMal.Id = investigadorPrueba.Id;
+                            investigadorMal.Url = "https://investigacion.ubu.es/investigadores/" + investigadorPrueba.Id + "/detalle";
+                            investigadorMal.FacultadCorrecta = nombreFacultad;
+                            investigadorMal.FacultadEsta = investigadorPrueba.Facu;
+                            investigadoresMal.Add(investigadorMal);
+                        }
+                    }
+                }
+                return Ok(investigadoresMal);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
                 return Ok();
             }

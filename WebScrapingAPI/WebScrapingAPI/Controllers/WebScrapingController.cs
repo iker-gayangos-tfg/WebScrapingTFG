@@ -520,6 +520,116 @@ namespace WebScrapingAPI.Controllers
             }
         }
 
+
+        public class DepartamentoPrueba
+        {
+            public string? Nombre { get; set; }
+            public string? Url { get; set; }
+
+        };
+
+        public class InvestigadorPrueba2
+        {
+            public string? Id { get; set; }
+            public string? Depa { get; set; }
+
+        };
+
+        public class InvestigadorMal2
+        {
+            public string? Id { get; set; }
+            public string? Url { get; set; }
+            public string? DepartamentoCorrecto { get; set; }
+            public string? DepartamentoEsta { get; set; }
+
+        };
+
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerInvestigadoresDepartamentoMal()
+        {
+            try
+            {
+                IWebDriver driver = new ChromeDriver();
+
+                List<DepartamentoPrueba> departamentosPrueba = new List<DepartamentoPrueba>();
+
+                //Obtener url de Departamentos
+
+                driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores");
+
+                var divDepartamentos = driver.FindElements(By.CssSelector(".investigadores-explorar__category-content")).FirstOrDefault(x => x.Text.Contains("Departamentos"));
+                if (divDepartamentos != null)
+                {
+                    var departamentos = divDepartamentos.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                    foreach (var departamento in departamentos)
+                    {
+                        DepartamentoPrueba departamentoPrueba = new DepartamentoPrueba();
+                        departamentoPrueba.Nombre = departamento.FindElement(By.TagName("a")).Text;
+                        departamentoPrueba.Url = departamento.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                        departamentosPrueba.Add(departamentoPrueba);
+                    }
+                }
+
+                //Obtener Ids de todos los investigadores
+                List<InvestigadorPrueba2> investigadoresPrueba = new List<InvestigadorPrueba2>();
+
+                foreach (var departamentoPrueba in departamentosPrueba)
+                {
+                    driver.Navigate().GoToUrl(departamentoPrueba.Url);
+                    var buttonsMas = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver más...");
+                    while (buttonsMas.Count() > 0)
+                    {
+                        foreach (var buttonMas in buttonsMas)
+                        {
+                            buttonMas.Click();
+                        }
+                        await Task.Delay(1000);
+                        buttonsMas = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver más...");
+                    };
+                    var investigadoresDepartamento = driver.FindElements(By.ClassName("unidad-miembros__item"));
+
+                    foreach (var investigadorDepartamento in investigadoresDepartamento)
+                    {
+                        InvestigadorPrueba2 investigadorPrueba = new InvestigadorPrueba2();
+                        investigadorPrueba.Id = investigadorDepartamento.GetAttribute("data-id").ToString();
+                        investigadorPrueba.Depa = departamentoPrueba.Nombre;
+                        investigadoresPrueba.Add(investigadorPrueba);
+                    }
+                }
+
+
+                List<InvestigadorMal2> investigadoresMal = new List<InvestigadorMal2>();
+
+
+                foreach (var investigadorPrueba in investigadoresPrueba)
+                {
+                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + investigadorPrueba.Id + "/detalle");
+
+                    var datosInvestigador = driver.FindElements(By.ClassName("investigador-detalles__detalle"));
+
+                    var departamentos = datosInvestigador.Where(x => x.Text.Contains("Departamento:"));
+                    foreach (var departamento in departamentos)
+                    {
+                        var nombreDepartamento = departamento.FindElement(By.TagName("a")).Text.ToString();
+                        if (nombreDepartamento != investigadorPrueba.Depa)
+                        {
+                            InvestigadorMal2 investigadorMal = new InvestigadorMal2();
+                            investigadorMal.Id = investigadorPrueba.Id;
+                            investigadorMal.Url = "https://investigacion.ubu.es/investigadores/" + investigadorPrueba.Id + "/detalle";
+                            investigadorMal.DepartamentoCorrecto = nombreDepartamento;
+                            investigadorMal.DepartamentoEsta = investigadorPrueba.Depa;
+                            investigadoresMal.Add(investigadorMal);
+                        }
+                    }
+                }
+                return Ok(investigadoresMal);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
                 return Ok();
             }
             catch (Exception ex)

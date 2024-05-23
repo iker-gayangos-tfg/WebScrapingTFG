@@ -41,5 +41,7 @@
         public SCImagoJournalRank? SCImagoJournalRank { get; set; }
 
         public ScopusCitescore? ScopusCitescore { get; set; }
+
+        public JournalCitationIndicator? JournalCitationIndicator { get; set; }
     }
 }

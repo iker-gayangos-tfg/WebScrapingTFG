@@ -33,5 +33,11 @@
         public string? Summary { get; set; }
 
         public ICollection<InvestigadorPublicacion>? InvestigadoresPublicaciones { get; set; }
+
+        public CitaRecibida? CitaRecibida { get; set; }
+
+        public JournalImpactFactor? JournalImpactFactor { get; set; }
+
+        public SCImagoJournalRank? SCImagoJournalRank { get; set; }
     }
 }

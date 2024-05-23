@@ -35,6 +35,10 @@ namespace WebScrapingAPI
         public DbSet<JournalImpactFactor> JournalImpactFactors { get; set; }
 
         public DbSet<JournalImpactFactorArea> JournalImpactFactorAreas { get; set; }
+
+        public DbSet<SCImagoJournalRank> SCImagoJournalRanks { get; set; }
+
+        public DbSet<SCImagoJournalRankArea> SCImagoJournalRankAreas { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -152,6 +156,13 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Publicacion_JournalImpactFactor]");
+
+                entity.HasOne(d => d.SCImagoJournalRank)
+                    .WithOne(p => p.Publicacion)
+                    .HasForeignKey<SCImagoJournalRank>(d => d.FoPublicacion)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Publicacion_SCImagoJournalRank]");
             });
 
             modelBuilder.Entity<JournalImpactFactorArea>(entity =>
@@ -162,6 +173,16 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_JournalImpactFactorAreas_JournalImpactFactor]");
+            });
+
+            modelBuilder.Entity<SCImagoJournalRankArea>(entity =>
+            {
+                entity.HasOne(d => d.SCImagoJournalRank)
+                    .WithMany(p => p.SCImagoJournalRankAreas)
+                    .HasForeignKey(d => d.FoSCImagoJournalRank)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_SCImagoJournalRankAreas_SCImagoJournalRank]");
             });
             });
             });

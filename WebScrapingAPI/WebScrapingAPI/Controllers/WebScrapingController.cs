@@ -64,7 +64,6 @@ namespace WebScrapingAPI.Controllers
                         }
                         await Task.Delay(1000);
                         buttonsMas = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver más...");
-                        Console.WriteLine(buttonsMas);
                     };
                     var investigadoresDepartamento = driver.FindElements(By.ClassName("unidad-miembros__item"));
 
@@ -455,6 +454,57 @@ namespace WebScrapingAPI.Controllers
                                 }
                                 _context.CitasRecibidas.Add(citaRecibida);
                                 await _context.SaveChangesAsync();
+                            }
+
+                            //JRC (Journal Impact Factor)
+                            var divJCR = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("(Journal Impact Factor)"));
+                            if (divJCR != null)
+                            {
+                                var JCRs = divJCR.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                JournalImpactFactor journalImpactFactor = new JournalImpactFactor();
+                                journalImpactFactor.FoPublicacion = publicacionBd.Id;
+                                var yearJCR = JCRs.FirstOrDefault(x => x.Text.Contains("Año"));
+                                if (yearJCR != null)
+                                {
+                                    journalImpactFactor.Year = yearJCR.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                var magazineImpactJCR = JCRs.FirstOrDefault(x => x.Text.Contains("impacto de la revista:"));
+                                if (magazineImpactJCR != null)
+                                {
+                                    journalImpactFactor.MagazineImpact = magazineImpactJCR.Text.Split(": ")[1];
+                                }
+                                var noAutoImpactJCR = JCRs.FirstOrDefault(x => x.Text.Contains("impacto sin autocitas:"));
+                                if (noAutoImpactJCR != null)
+                                {
+                                    journalImpactFactor.NoAutoImpact = noAutoImpactJCR.Text.Split(": ")[1];
+                                }
+                                var articleInfluenceScoreJCR = JCRs.FirstOrDefault(x => x.Text.Contains("Article influence score"));
+                                if (articleInfluenceScoreJCR != null)
+                                {
+                                    journalImpactFactor.ArticleInfluenceScore = articleInfluenceScoreJCR.Text.Split(": ")[1];
+                                }
+                                var majorQueartilJCR = JCRs.FirstOrDefault(x => x.Text.Contains("Cuartil mayor:"));
+                                if (majorQueartilJCR != null)
+                                {
+                                    journalImpactFactor.MajorQuartil = majorQueartilJCR.Text.Split(": ")[1];
+                                }
+                                _context.JournalImpactFactors.Add(journalImpactFactor);
+                                await _context.SaveChangesAsync();
+                                var JCRBd = await _context.JournalImpactFactors.FirstAsync(x => x.FoPublicacion == publicacionBd.Id);
+                                var areasJCR = JCRs.Where(x => x.Text.Contains("Área:"));
+                                foreach (var area in areasJCR)
+                                {
+                                    JournalImpactFactorArea journalImpactFactorArea = new JournalImpactFactorArea();
+                                    journalImpactFactorArea.FoJournalImpactFactor = JCRBd.Id;
+                                    var tmpTextString = area.Text.Split("Área: ")[1];
+                                    journalImpactFactorArea.Area = tmpTextString.Split(" Cuartil:")[0];
+                                    tmpTextString = tmpTextString.Split("Cuartil: ")[1];
+                                    journalImpactFactorArea.Quartil = tmpTextString.Split(" Posición en")[0];
+                                    tmpTextString = tmpTextString.Split("Posición en el área: ")[1];
+                                    journalImpactFactorArea.Position = tmpTextString.Split("Posición en el área: ")[0];
+                                    _context.JournalImpactFactorAreas.Add(journalImpactFactorArea);
+                                    await _context.SaveChangesAsync();
+                                }
                             }
                         }
                     }

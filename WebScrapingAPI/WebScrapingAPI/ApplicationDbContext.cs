@@ -39,6 +39,10 @@ namespace WebScrapingAPI
         public DbSet<SCImagoJournalRank> SCImagoJournalRanks { get; set; }
 
         public DbSet<SCImagoJournalRankArea> SCImagoJournalRankAreas { get; set; }
+
+        public DbSet<ScopusCitescore> ScopusCitescores { get; set; }
+
+        public DbSet<ScopusCitescoreArea> ScopusCitescoreAreas { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -163,6 +167,13 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Publicacion_SCImagoJournalRank]");
+
+                entity.HasOne(d => d.ScopusCitescore)
+                    .WithOne(p => p.Publicacion)
+                    .HasForeignKey<ScopusCitescore>(d => d.FoPublicacion)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Publicacion_ScopusCitescore]");
             });
 
             modelBuilder.Entity<JournalImpactFactorArea>(entity =>
@@ -184,6 +195,15 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_SCImagoJournalRankAreas_SCImagoJournalRank]");
             });
+
+            modelBuilder.Entity<ScopusCitescoreArea>(entity =>
+            {
+                entity.HasOne(d => d.ScopusCitescore)
+                    .WithMany(p => p.ScopusCitescoreAreas)
+                    .HasForeignKey(d => d.FoScopusCitescore)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_ScopusCitescoreAreas_ScopusCitescore]");
             });
             });
         }

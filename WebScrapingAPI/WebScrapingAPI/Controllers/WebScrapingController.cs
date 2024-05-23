@@ -506,6 +506,48 @@ namespace WebScrapingAPI.Controllers
                                     await _context.SaveChangesAsync();
                                 }
                             }
+
+
+                            // SCImago Journal Rank
+                            var divSCImago = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("SCImago Journal Rank"));
+                            if (divSCImago != null)
+                            {
+                                var SCImagos = divSCImago.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                SCImagoJournalRank sCImagoJournalRank = new SCImagoJournalRank();
+                                sCImagoJournalRank.FoPublicacion = publicacionBd.Id;
+                                var yearSCImago = SCImagos.FirstOrDefault(x => x.Text.Contains("Año"));
+                                if (yearSCImago != null)
+                                {
+                                    sCImagoJournalRank.Year = yearSCImago.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                var magazineImpactSCImago = SCImagos.FirstOrDefault(x => x.Text.Contains("Impacto SJR de la revista:"));
+                                if (magazineImpactSCImago != null)
+                                {
+                                    sCImagoJournalRank.SJRImpactMagazine = magazineImpactSCImago.Text.Split(": ")[1];
+                                }
+                                var majorQueartilSCImago = SCImagos.FirstOrDefault(x => x.Text.Contains("Cuartil mayor:"));
+                                if (majorQueartilSCImago != null)
+                                {
+                                    sCImagoJournalRank.MajorQuartil = majorQueartilSCImago.Text.Split(": ")[1];
+                                }
+                                _context.SCImagoJournalRanks.Add(sCImagoJournalRank);
+                                await _context.SaveChangesAsync();
+                                var SCImagoBd = await _context.SCImagoJournalRanks.FirstAsync(x => x.FoPublicacion == publicacionBd.Id);
+                                var areasSCImago = SCImagos.Where(x => x.Text.Contains("Área:"));
+                                foreach (var area in areasSCImago)
+                                {
+                                    SCImagoJournalRankArea sCImagoJournalRankArea = new SCImagoJournalRankArea();
+                                    sCImagoJournalRankArea.FoSCImagoJournalRank = SCImagoBd.Id;
+                                    var tmpTextString = area.Text.Split("Área: ")[1];
+                                    sCImagoJournalRankArea.Area = tmpTextString.Split(" Cuartil:")[0];
+                                    tmpTextString = tmpTextString.Split("Cuartil: ")[1];
+                                    sCImagoJournalRankArea.Quartil = tmpTextString.Split(" Posición en")[0];
+                                    tmpTextString = tmpTextString.Split("Posición en el área: ")[1];
+                                    sCImagoJournalRankArea.Position = tmpTextString.Split("Posición en el área: ")[0];
+                                    _context.SCImagoJournalRankAreas.Add(sCImagoJournalRankArea);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
                         }
                     }
                 }

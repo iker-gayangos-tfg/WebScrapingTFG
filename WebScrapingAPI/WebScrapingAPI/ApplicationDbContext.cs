@@ -31,6 +31,10 @@ namespace WebScrapingAPI
         public DbSet<InvestigadorPublicacion> InvestigadoresPublicaciones { get; set; }
 
         public DbSet<CitaRecibida> CitasRecibidas { get; set; }
+
+        public DbSet<JournalImpactFactor> JournalImpactFactors { get; set; }
+
+        public DbSet<JournalImpactFactorArea> JournalImpactFactorAreas { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -141,6 +145,23 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Publicacion_CitaRecibida]");
+
+                entity.HasOne(d => d.JournalImpactFactor)
+                    .WithOne(p => p.Publicacion)
+                    .HasForeignKey<JournalImpactFactor>(d => d.FoPublicacion)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Publicacion_JournalImpactFactor]");
+            });
+
+            modelBuilder.Entity<JournalImpactFactorArea>(entity =>
+            {
+                entity.HasOne(d => d.JournalImpactFactor)
+                    .WithMany(p => p.JournalImpactFactorAreas)
+                    .HasForeignKey(d => d.FoJournalImpactFactor)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_JournalImpactFactorAreas_JournalImpactFactor]");
             });
             });
             });

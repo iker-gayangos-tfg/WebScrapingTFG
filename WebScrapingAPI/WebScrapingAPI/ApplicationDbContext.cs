@@ -47,6 +47,8 @@ namespace WebScrapingAPI
         public DbSet<JournalCitationIndicator> JournalCitationIndicators { get; set; }
 
         public DbSet<JournalCitationIndicatorArea> JournalCitationIndicatorAreas { get; set; }
+
+        public DbSet<Dimensions> Dimensions { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -185,6 +187,13 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Publicacion_JournalCitationIndicator]");
+
+                entity.HasOne(d => d.Dimensions)
+                    .WithOne(p => p.Publicacion)
+                    .HasForeignKey<Dimensions>(d => d.FoPublicacion)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Publicacion_Dimensions]");
             });
 
             modelBuilder.Entity<JournalImpactFactorArea>(entity =>

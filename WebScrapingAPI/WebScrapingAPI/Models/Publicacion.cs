@@ -43,5 +43,7 @@
         public ScopusCitescore? ScopusCitescore { get; set; }
 
         public JournalCitationIndicator? JournalCitationIndicator { get; set; }
+
+        public Dimensions? Dimensions { get; set; }
     }
 }

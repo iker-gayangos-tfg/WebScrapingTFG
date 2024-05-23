@@ -625,6 +625,33 @@ namespace WebScrapingAPI.Controllers
                                     await _context.SaveChangesAsync();
                                 }
                             }
+
+
+                            //Dimensions
+                            var divDimensions = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Datos actualizados a fecha"));
+                            if (divDimensions != null)
+                            {
+                                var dimensionss = divDimensions.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                Dimensions dimensions = new Dimensions();
+                                dimensions.FoPublicacion = publicacionBd.Id;
+                                var totalDimensions = dimensionss.FirstOrDefault(x => x.Text.Contains("Citas totales:"));
+                                if (totalDimensions != null)
+                                {
+                                    dimensions.CitasTotales = totalDimensions.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                var recentDimensions = dimensionss.FirstOrDefault(x => x.Text.Contains("Citas recientes"));
+                                if (recentDimensions != null)
+                                {
+                                    dimensions.CitasRecientes = recentDimensions.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                var fieldCitationDimensions = dimensionss.FirstOrDefault(x => x.Text.Contains("Field Citation Ratio"));
+                                if (fieldCitationDimensions != null)
+                                {
+                                    dimensions.FieldCitationRatio = fieldCitationDimensions.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                _context.Dimensions.Add(dimensions);
+                                await _context.SaveChangesAsync();
+                            }
                         }
                     }
                 }

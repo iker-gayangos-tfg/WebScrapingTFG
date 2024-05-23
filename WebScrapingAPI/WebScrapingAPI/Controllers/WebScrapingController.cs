@@ -652,6 +652,38 @@ namespace WebScrapingAPI.Controllers
                                 _context.Dimensions.Add(dimensions);
                                 await _context.SaveChangesAsync();
                             }
+
+
+                            //Índice Dialnet de Revistas
+                            var divDialnet = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Índice Dialnet de Revistas"));
+                            if (divDialnet != null)
+                            {
+                                var dialnets = divDialnet.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                DialnetRevista dialnetRevista = new DialnetRevista();
+                                dialnetRevista.FoPublicacion = publicacionBd.Id;
+                                var yearDialnet = dialnets.FirstOrDefault(x => x.Text.Contains("Año"));
+                                if (yearDialnet != null)
+                                {
+                                    dialnetRevista.Year = yearDialnet.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                var magazineImpactDialnet = dialnets.FirstOrDefault(x => x.Text.Contains("Impacto de la revista"));
+                                if (magazineImpactDialnet != null)
+                                {
+                                    dialnetRevista.MagazineImpact = magazineImpactDialnet.Text.Split(": ")[1];
+                                }
+                                var ambitDialnet = dialnets.FirstOrDefault(x => x.Text.Contains("Ámbito:"));
+                                if (ambitDialnet != null)
+                                {
+                                    var tmpTextString = ambitDialnet.Text.Split("Ámbito: ")[1];
+                                    dialnetRevista.Ambit = tmpTextString.Split(" Cuartil:")[0];
+                                    tmpTextString = tmpTextString.Split("Cuartil: ")[1];
+                                    dialnetRevista.Quartil = tmpTextString.Split(" Posición en")[0];
+                                    tmpTextString = tmpTextString.Split("Posición en el ámbito: ")[1];
+                                    dialnetRevista.Position = tmpTextString.Split("Posición en el ámbito: ")[0];
+                                }
+                                _context.DialnetRevistas.Add(dialnetRevista);
+                                await _context.SaveChangesAsync();
+                            }
                         }
                     }
                 }

@@ -583,6 +583,48 @@ namespace WebScrapingAPI.Controllers
                                     await _context.SaveChangesAsync();
                                 }
                             }
+
+
+                            //Journal Citation Indicator (JCI)
+                            var divJCI = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Journal Citation Indicator (JCI)"));
+                            if (divJCI != null)
+                            {
+                                var JCIs = divJCI.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                JournalCitationIndicator journalCitationIndicator = new JournalCitationIndicator();
+                                journalCitationIndicator.FoPublicacion = publicacionBd.Id;
+                                var yearJCI = JCIs.FirstOrDefault(x => x.Text.Contains("Año"));
+                                if (yearJCI != null)
+                                {
+                                    journalCitationIndicator.Year = yearJCI.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                var magazineJCI = JCIs.FirstOrDefault(x => x.Text.Contains("JCI de la revista"));
+                                if (magazineJCI != null)
+                                {
+                                    journalCitationIndicator.MagazineJCI = magazineJCI.Text.Split(": ")[1];
+                                }
+                                var majorQueartilJCI = JCIs.FirstOrDefault(x => x.Text.Contains("Cuartil mayor:"));
+                                if (majorQueartilJCI != null)
+                                {
+                                    journalCitationIndicator.MajorQuartil = majorQueartilJCI.Text.Split(": ")[1];
+                                }
+                                _context.JournalCitationIndicators.Add(journalCitationIndicator);
+                                await _context.SaveChangesAsync();
+                                var JCIBd = await _context.JournalCitationIndicators.FirstAsync(x => x.FoPublicacion == publicacionBd.Id);
+                                var areasJCI = JCIs.Where(x => x.Text.Contains("Área:"));
+                                foreach (var area in areasJCI)
+                                {
+                                    JournalCitationIndicatorArea journalCitationIndicatorArea = new JournalCitationIndicatorArea();
+                                    journalCitationIndicatorArea.FoJournalCitationIndicator = JCIBd.Id;
+                                    var tmpTextString = area.Text.Split("Área: ")[1];
+                                    journalCitationIndicatorArea.Area = tmpTextString.Split(" Cuartil:")[0];
+                                    tmpTextString = tmpTextString.Split("Cuartil: ")[1];
+                                    journalCitationIndicatorArea.Quartil = tmpTextString.Split(" Posición en")[0];
+                                    tmpTextString = tmpTextString.Split("Posición en el área: ")[1];
+                                    journalCitationIndicatorArea.Position = tmpTextString.Split("Posición en el área: ")[0];
+                                    _context.JournalCitationIndicatorAreas.Add(journalCitationIndicatorArea);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
                         }
                     }
                 }

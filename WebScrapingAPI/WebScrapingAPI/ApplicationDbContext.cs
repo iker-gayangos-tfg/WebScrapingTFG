@@ -54,14 +54,14 @@ namespace WebScrapingAPI
                     .HasForeignKey(d => d.FoInvestigador)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Investigador]");
+                    .HasConstraintName("[FK_InvestigadorFacultad_Investigador]");
 
                 entity.HasOne(d => d.Facultad)
                     .WithMany(p => p.InvestigadoresFacultades)
                     .HasForeignKey(d => d.FoFacultad)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Facultad]");
+                    .HasConstraintName("[FK_InvestigadorFacultad_Facultad]");
             });
 
             modelBuilder.Entity<InvestigadorArea>(entity =>
@@ -71,14 +71,14 @@ namespace WebScrapingAPI
                     .HasForeignKey(d => d.FoInvestigador)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Investigador]");
+                    .HasConstraintName("[FK_InvestigadorArea_Investigador]");
 
                 entity.HasOne(d => d.Area)
                     .WithMany(p => p.InvestigadoresAreas)
                     .HasForeignKey(d => d.FoArea)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Area]");
+                    .HasConstraintName("[FK_InvestigadorArea_Area]");
             });
 
             modelBuilder.Entity<InvestigadorProgramaDoctorado>(entity =>
@@ -88,14 +88,14 @@ namespace WebScrapingAPI
                     .HasForeignKey(d => d.FoInvestigador)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Investigador]");
+                    .HasConstraintName("[FK_InvestigadorProgramaDoctorado_Investigador]");
 
                 entity.HasOne(d => d.ProgramaDoctorado)
                     .WithMany(p => p.InvestigadoresProgramasDoctorado)
                     .HasForeignKey(d => d.FoProgramaDoctorado)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_ProgramaDoctorado]");
+                    .HasConstraintName("[FK_InvestigadorProgramaDoctorado_ProgramaDoctorado]");
             });
 
             modelBuilder.Entity<InvestigadorGrupoInvestigacion>(entity =>
@@ -105,14 +105,14 @@ namespace WebScrapingAPI
                     .HasForeignKey(d => d.FoInvestigador)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Investigador]");
+                    .HasConstraintName("[FK_InvestigadorGrupoInvestigacion_Investigador]");
 
                 entity.HasOne(d => d.GrupoInvestigacion)
                     .WithMany(p => p.InvestigadoresGruposInvestigacion)
                     .HasForeignKey(d => d.FoGrupoInvestigacion)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_GrupoInvestigacion]");
+                    .HasConstraintName("[FK_InvestigadorGrupoInvestigacion_GrupoInvestigacion]");
             });
 
 
@@ -123,14 +123,16 @@ namespace WebScrapingAPI
                     .HasForeignKey(d => d.FoInvestigador)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Investigador]");
+                    .HasConstraintName("[FK_InvestigadorPublicacion_Investigador]");
 
                 entity.HasOne(d => d.Publicacion)
                     .WithMany(p => p.InvestigadoresPublicaciones)
                     .HasForeignKey(d => d.FoPublicacion)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
-                    .HasConstraintName("[FK_Publicacion]");
+                    .HasConstraintName("[FK_InvestigadorPublicacion_Publicacion]");
+            });
+
             modelBuilder.Entity<Publicacion>(entity =>
             {
                 entity.HasOne(d => d.CitaRecibida)

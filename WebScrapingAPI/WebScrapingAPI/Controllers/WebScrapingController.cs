@@ -548,6 +548,41 @@ namespace WebScrapingAPI.Controllers
                                     await _context.SaveChangesAsync();
                                 }
                             }
+
+
+                            //Scopus Citescore
+                            var divScopus = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Scopus CiteScore"));
+                            if (divScopus != null)
+                            {
+                                var Scopuss = divScopus.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                ScopusCitescore scopusCitescore = new ScopusCitescore();
+                                scopusCitescore.FoPublicacion = publicacionBd.Id;
+                                var yearScopus = Scopuss.FirstOrDefault(x => x.Text.Contains("Año"));
+                                if (yearScopus != null)
+                                {
+                                    scopusCitescore.Year = yearScopus.FindElement(By.TagName("a")).Text.ToString();
+                                }
+                                var magazineCitascore = Scopuss.FirstOrDefault(x => x.Text.Contains("CiteScore de la revista:"));
+                                if (magazineCitascore != null)
+                                {
+                                    scopusCitescore.MagazineCitescore = magazineCitascore.Text.Split(": ")[1];
+                                }
+                                _context.ScopusCitescores.Add(scopusCitescore);
+                                await _context.SaveChangesAsync();
+                                var ScopusBd = await _context.ScopusCitescores.FirstAsync(x => x.FoPublicacion == publicacionBd.Id);
+                                var areasScopus = Scopuss.Where(x => x.Text.Contains("Área:"));
+                                foreach (var area in areasScopus)
+                                {
+                                    ScopusCitescoreArea scopusCitescoreArea = new ScopusCitescoreArea();
+                                    scopusCitescoreArea.FoScopusCitescore = ScopusBd.Id;
+                                    var tmpTextString = area.Text.Split("Área: ")[1];
+                                    scopusCitescoreArea.Area = tmpTextString.Split(" Percentil:")[0];
+                                    tmpTextString = tmpTextString.Split("Percentil: ")[1];
+                                    scopusCitescoreArea.Percentil = tmpTextString.Split("Percentil: ")[0];
+                                    _context.ScopusCitescoreAreas.Add(scopusCitescoreArea);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
                         }
                     }
                 }

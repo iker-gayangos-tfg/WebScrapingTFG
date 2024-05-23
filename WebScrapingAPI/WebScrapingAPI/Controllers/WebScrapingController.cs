@@ -409,6 +409,54 @@ namespace WebScrapingAPI.Controllers
                                 }
                             }
                         }
+
+                        //Indicadores
+                        var buttonsIndicadores = driver.FindElements(By.ClassName("botonIndicadores")).Where(x => x.Text.Contains("Ver indicadores"));
+                        var hasIndicators = false;
+                        foreach (var buttonIndicadores in buttonsIndicadores)
+                        {
+                            buttonIndicadores.FindElement(By.TagName("a")).Click();
+                            hasIndicators = true;
+                        }
+
+                        if (hasIndicators)
+                        {
+                            var indicadoresPublication = driver.FindElement(By.ClassName("documento-detalle__indicadores")).FindElements(By.TagName("div"));
+
+                            //Citas Recibidas
+                            var divAppointmentsReceived = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Citas recibidas"));
+                            if (divAppointmentsReceived != null)
+                            {
+                                var appointmentsReceived = divAppointmentsReceived.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                CitaRecibida citaRecibida = new CitaRecibida();
+                                citaRecibida.FoPublicacion = publicacionBd.Id;
+                                var scopus = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Citas en Scopus"));
+                                if (scopus != null)
+                                {
+                                    citaRecibida.ScopusCount = scopus.FindElement(By.TagName("a")).Text.ToString();
+                                    citaRecibida.ScopusUrl = scopus.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                                    citaRecibida.ScopusDate = scopus.FindElements(By.TagName("span")).FirstOrDefault(x => x.Text.Contains("(")).Text.ToString();
+                                }
+
+                                var webScience = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Citas en Web of Science"));
+                                if (webScience != null)
+                                {
+                                    citaRecibida.WebScienceCount = webScience.FindElement(By.TagName("a")).Text.ToString();
+                                    citaRecibida.WebScienceUrl = webScience.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                                    citaRecibida.WebScienceDate = webScience.FindElements(By.TagName("span")).FirstOrDefault(x => x.Text.Contains("(")).Text.ToString();
+                                }
+
+                                var dimensions = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Citas en Dimensions"));
+                                if (dimensions != null)
+                                {
+                                    citaRecibida.DimensionsCount = dimensions.FindElement(By.TagName("a")).Text.ToString();
+                                    citaRecibida.DimensionsUrl = dimensions.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                                    citaRecibida.DimensionsDate = dimensions.FindElements(By.TagName("span")).FirstOrDefault(x => x.Text.Contains("(")).Text.ToString();
+                                }
+                                _context.CitasRecibidas.Add(citaRecibida);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
                     }
                 }
         public class FacultaPrueba

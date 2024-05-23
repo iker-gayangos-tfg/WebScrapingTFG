@@ -29,6 +29,8 @@ namespace WebScrapingAPI
         public DbSet<Publicacion> Publicaciones { get; set; }
 
         public DbSet<InvestigadorPublicacion> InvestigadoresPublicaciones { get; set; }
+
+        public DbSet<CitaRecibida> CitasRecibidas { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -129,6 +131,16 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Publicacion]");
+            modelBuilder.Entity<Publicacion>(entity =>
+            {
+                entity.HasOne(d => d.CitaRecibida)
+                    .WithOne(p => p.Publicacion)
+                    .HasForeignKey<CitaRecibida>(d => d.FoPublicacion)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Publicacion_CitaRecibida]");
+            });
+            });
             });
         }
     }

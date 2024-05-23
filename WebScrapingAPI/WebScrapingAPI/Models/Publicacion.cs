@@ -45,5 +45,8 @@
         public JournalCitationIndicator? JournalCitationIndicator { get; set; }
 
         public Dimensions? Dimensions { get; set; }
+
+        public DialnetRevista? DialnetRevista { get; set; }
+
     }
 }

@@ -49,6 +49,11 @@ namespace WebScrapingAPI
         public DbSet<JournalCitationIndicatorArea> JournalCitationIndicatorAreas { get; set; }
 
         public DbSet<Dimensions> Dimensions { get; set; }
+
+        public DbSet<DialnetRevista> DialnetRevistas { get; set; }
+
+
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
         }
@@ -194,6 +199,13 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_Publicacion_Dimensions]");
+
+                entity.HasOne(d => d.DialnetRevista)
+                    .WithOne(p => p.Publicacion)
+                    .HasForeignKey<DialnetRevista>(d => d.FoPublicacion)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Publicacion_DialnetRevista]");
             });
 
             modelBuilder.Entity<JournalImpactFactorArea>(entity =>

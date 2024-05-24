@@ -24,5 +24,11 @@
         public ICollection<InvestigadorGrupoInvestigacion>? InvestigadoresGruposInvestigacion { get; set; }
 
         public ICollection<InvestigadorPublicacion>? InvestigadoresPublicaciones { get; set; }
+
+        public ICollection<Tesis>? Tesis { get; set; }
+
+        public ICollection<TesisDirector>? TesisDirectores { get; set; }
+
+        public ICollection<InvestigadorPatente>? InvestigadoresPatentes { get; set; }
     }
 }

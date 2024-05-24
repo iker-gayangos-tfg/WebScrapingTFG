@@ -56,6 +56,11 @@ namespace WebScrapingAPI
 
         public DbSet<TesisDirector> TesisDirectores { get; set; }
 
+        public DbSet<Patente> Patentes { get; set; }
+
+        public DbSet<InvestigadorPatente> InvestigadoresPatentes { get; set; }
+
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
             
@@ -276,6 +281,23 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_TesisDirector_Tesis]");
+            });
+
+            modelBuilder.Entity<InvestigadorPatente>(entity =>
+            {
+                entity.HasOne(d => d.Investigador)
+                    .WithMany(p => p.InvestigadoresPatentes)
+                    .HasForeignKey(d => d.FoInvestigador)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_InvestigadorPatente_Investigador]");
+
+                entity.HasOne(d => d.Patente)
+                    .WithMany(p => p.InvestigadoresPatentes)
+                    .HasForeignKey(d => d.FoPatente)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_InvestigadorPatente_Patente]");
             });
         }
     }

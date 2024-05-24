@@ -686,6 +686,147 @@ namespace WebScrapingAPI.Controllers
                             }
                         }
                     }
+
+                    //Tesis
+                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + idInvestigador + "/tesis");
+
+                    //Obtener Url Tesis
+                    var divTesis = driver.FindElements(By.ClassName("investigador-tesis__item"));
+                    List<string> urlListTesis = new List<string>();
+
+                    foreach (var tesis in divTesis)
+                    {
+                        var tesisUrl = tesis.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                        urlListTesis.Add(tesisUrl);
+                    }
+
+                    foreach (var tesisUrl in urlListTesis)
+                    {
+                        var isTesisBd = await _context.Tesis.AnyAsync(x => x.Url == tesisUrl);
+                        if (isTesisBd) { continue; }
+
+                        driver.Navigate().GoToUrl(tesisUrl);
+
+                        Tesis tesisToBd = new Tesis();
+                        var titleTesis = driver.FindElement(By.ClassName("documento-detalle__titulo")).Text.ToString();
+                        tesisToBd.Title = titleTesis;
+                        tesisToBd.Url = tesisUrl;
+
+                        var tesis_info = driver.FindElements(By.ClassName("documento-detalle__localizacion"));
+
+                        //Universidad
+                        var universityTesis = tesis_info.FirstOrDefault(x => x.Text.Contains("Universidad de defensa:"));
+                        if (universityTesis != null && universityTesis.Text.Split("Universidad de defensa: ").Count() > 1)
+                        {
+                            tesisToBd.University = universityTesis.Text.Split("Universidad de defensa: ")[1];
+                        }
+
+                        //Fecha de defensa
+                        var dateTesis = tesis_info.FirstOrDefault(x => x.Text.Contains("Fecha de defensa:"));
+                        if (dateTesis != null && dateTesis.Text.Split("Fecha de defensa: ").Count() > 1)
+                        {
+                            tesisToBd.Date = dateTesis.Text.Split("Fecha de defensa: ")[1];
+                        }
+
+                        //Resumen
+                        var summaryTesis = driver.FindElements(By.ClassName("documento-detalle__resumen"));
+                        if (summaryTesis != null && summaryTesis.Count > 0)
+                        {
+                            tesisToBd.Summary = summaryTesis[0].FindElement(By.TagName("p")).Text.ToString();
+                        }
+
+                        //Obtener autores de tesis
+                        var divAutor = driver.FindElement(By.CssSelector(".documento__autor"));
+
+                        var spanAutor = divAutor.FindElements(By.TagName("span"));
+                        if (spanAutor.Count > 0)
+                        {
+                            foreach (var span in spanAutor)
+                            {
+                                var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.Nombre == span.Text.ToString());
+                                if (!isInvestigadorBdTmp)
+                                {
+                                    Investigador investigadorToBd = new Investigador();
+                                    investigadorToBd.Nombre = span.Text.ToString();
+                                    _context.Investigadores.Add(investigadorToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                                var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.Nombre == span.Text.ToString());
+                                tesisToBd.FoInvestigador = investigadorBdTmp.Id;
+                            }
+                        }
+                        else
+                        {
+                            var asAutor = divAutor.FindElements(By.TagName("a")).FirstOrDefault(x => x.Text.Contains(" "));
+                            if (asAutor != null)
+                            {
+                                var urlInvestigador = asAutor.GetAttribute("href").ToString();
+                                var tmpUrl = urlInvestigador.Split("investigadores/")[1];
+                                var idInvestigadorTmp = tmpUrl.Split("/detall")[0];
+                                var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                if (!isInvestigadorBdTmp)
+                                {
+                                    Investigador investigadorToBd = new Investigador();
+                                    investigadorToBd.IdInvestigador = idInvestigadorTmp;
+                                    _context.Investigadores.Add(investigadorToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                                var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                tesisToBd.FoInvestigador = investigadorBdTmp.Id;
+                            }
+                        }
+                        _context.Tesis.Add(tesisToBd);
+                        await _context.SaveChangesAsync();
+                        var tesisBd = await _context.Tesis.FirstAsync(x => x.Url == tesisUrl);
+
+                        //Directores de tesis
+                        var directoresTesis = driver.FindElements(By.ClassName("documento__director"));
+                        foreach (var directorTesis in directoresTesis)
+                        {
+                            var asDirector = directorTesis.FindElements(By.TagName("a"));
+                            if (asDirector.Count() > 0)
+                            {
+                                foreach (var aDirector in asDirector)
+                                {
+                                    var urlInvestigador = aDirector.GetAttribute("href").ToString();
+                                    var tmpUrl = urlInvestigador.Split("investigadores/")[1];
+                                    var idInvestigadorTmp = tmpUrl.Split("/detall")[0];
+                                    var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                    if (!isInvestigadorBdTmp)
+                                    {
+                                        Investigador investigadorToBd = new Investigador();
+                                        investigadorToBd.IdInvestigador = idInvestigadorTmp;
+                                        _context.Investigadores.Add(investigadorToBd);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                    var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                    TesisDirector tesisDirectorToBd = new TesisDirector();
+                                    tesisDirectorToBd.FoInvestigador = investigadorBdTmp.Id;
+                                    tesisDirectorToBd.FoTesis = tesisBd.Id;
+                                    _context.TesisDirectores.Add(tesisDirectorToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
+                            else
+                            {
+                                var spanDirector = directorTesis.FindElements(By.TagName("span")).ToList()[0];
+                                var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.Nombre == spanDirector.Text.ToString());
+                                if (!isInvestigadorBdTmp)
+                                {
+                                    Investigador investigadorToBd = new Investigador();
+                                    investigadorToBd.Nombre = spanDirector.Text.ToString();
+                                    _context.Investigadores.Add(investigadorToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                                var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.Nombre == spanDirector.Text.ToString());
+                                TesisDirector tesisDirectorToBd = new TesisDirector();
+                                tesisDirectorToBd.FoInvestigador = investigadorBdTmp.Id;
+                                tesisDirectorToBd.FoTesis = tesisBd.Id;
+                                _context.TesisDirectores.Add(tesisDirectorToBd);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
                 }
         public class FacultaPrueba
         {

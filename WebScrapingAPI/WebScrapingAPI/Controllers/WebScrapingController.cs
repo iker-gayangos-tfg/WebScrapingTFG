@@ -827,6 +827,100 @@ namespace WebScrapingAPI.Controllers
                             }
                         }
                     }
+
+
+                    //Patentes
+                    driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + idInvestigador + "/patentes");
+
+                    List<string> urlListPatentes = new List<string>();
+                    //Obtener Url patentes
+                    var mainContent = driver.FindElements(By.ClassName("main-content"));
+
+                    foreach (var main in mainContent)
+                    {
+                        var patentes = main.FindElement(By.ClassName("list-unstyled")).FindElements(By.TagName("li"));
+                        foreach (var patente in patentes)
+                        {
+                            var patenteUrl = patente.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                            urlListPatentes.Add(patenteUrl);
+                        }
+                    }
+
+                    foreach (var patenteUrl in urlListPatentes)
+                    {
+                        var isPatenteBd = await _context.Patentes.AnyAsync(x => x.Url == patenteUrl);
+                        if (isPatenteBd) { continue; }
+
+                        driver.Navigate().GoToUrl(patenteUrl);
+
+                        Patente patenteToBd = new Patente();
+                        var titlePatente = driver.FindElement(By.ClassName("documento-detalle__titulo")).Text.ToString();
+                        patenteToBd.Title = titlePatente;
+                        patenteToBd.Url = patenteUrl;
+
+                        //Resumen
+                        var summaryPatente = driver.FindElements(By.ClassName("documento-detalle__resumen"));
+                        if (summaryPatente != null && summaryPatente.Count > 0)
+                        {
+                            patenteToBd.Summary = summaryPatente[0].FindElement(By.TagName("p")).Text.ToString();
+                        }
+
+                        _context.Patentes.Add(patenteToBd);
+                        await _context.SaveChangesAsync();
+                        var patenteBd = await _context.Patentes.FirstAsync(x => x.Url == patenteUrl);
+
+                        //Obtener inventores de patentes
+                        var lisInventores = driver.FindElements(By.ClassName("documento__autor"));
+
+                        foreach (var liInventor in lisInventores)
+                        {
+                            var spanInventor = liInventor.FindElements(By.TagName("span"));
+                            if (spanInventor.Count > 0)
+                            {
+                                foreach (var span in spanInventor)
+                                {
+                                    var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.Nombre == span.Text.ToString());
+                                    if (!isInvestigadorBdTmp)
+                                    {
+                                        Investigador investigadorToBd = new Investigador();
+                                        investigadorToBd.Nombre = span.Text.ToString();
+                                        _context.Investigadores.Add(investigadorToBd);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                    var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.Nombre == span.Text.ToString());
+                                    InvestigadorPatente investigadorPatenteToBd = new InvestigadorPatente();
+                                    investigadorPatenteToBd.FoInvestigador = investigadorBdTmp.Id;
+                                    investigadorPatenteToBd.FoPatente = patenteBd.Id;
+                                    _context.InvestigadoresPatentes.Add(investigadorPatenteToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
+                            else
+                            {
+                                var asInventor = liInventor.FindElements(By.TagName("a")).FirstOrDefault();
+                                if (asInventor != null)
+                                {
+                                    var urlInvestigador = asInventor.GetAttribute("href").ToString();
+                                    var tmpUrl = urlInvestigador.Split("investigadores/")[1];
+                                    var idInvestigadorTmp = tmpUrl.Split("/detall")[0];
+                                    var isInvestigadorBdTmp = await _context.Investigadores.AnyAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                    if (!isInvestigadorBdTmp)
+                                    {
+                                        Investigador investigadorToBd = new Investigador();
+                                        investigadorToBd.IdInvestigador = idInvestigadorTmp;
+                                        _context.Investigadores.Add(investigadorToBd);
+                                        await _context.SaveChangesAsync();
+                                    }
+                                    var investigadorBdTmp = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigadorTmp);
+                                    InvestigadorPatente investigadorPatenteToBd = new InvestigadorPatente();
+                                    investigadorPatenteToBd.FoInvestigador = investigadorBdTmp.Id;
+                                    investigadorPatenteToBd.FoPatente = patenteBd.Id;
+                                    _context.InvestigadoresPatentes.Add(investigadorPatenteToBd);
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
+                        }
+                    }
                 }
         public class FacultaPrueba
         {

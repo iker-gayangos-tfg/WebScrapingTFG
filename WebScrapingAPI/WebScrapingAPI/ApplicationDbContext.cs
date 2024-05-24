@@ -52,6 +52,9 @@ namespace WebScrapingAPI
 
         public DbSet<DialnetRevista> DialnetRevistas { get; set; }
 
+        public DbSet<Tesis> Tesis { get; set; }
+
+        public DbSet<TesisDirector> TesisDirectores { get; set; }
 
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options) { 
@@ -246,6 +249,33 @@ namespace WebScrapingAPI
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("[FK_JournalCitationIndicatorAreas_JournalCitationIndicator]");
+            });
+
+            modelBuilder.Entity<Tesis>(entity =>
+            {
+                entity.HasOne(d => d.Investigador)
+                    .WithMany(p => p.Tesis)
+                    .HasForeignKey(d => d.FoInvestigador)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_Tesis_Investigador]");
+            });
+
+            modelBuilder.Entity<TesisDirector>(entity =>
+            {
+                entity.HasOne(d => d.Investigador)
+                    .WithMany(p => p.TesisDirectores)
+                    .HasForeignKey(d => d.FoInvestigador)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_TesisDirector_Invstigador]");
+
+                entity.HasOne(d => d.Tesis)
+                    .WithMany(p => p.TesisDirectores)
+                    .HasForeignKey(d => d.FoTesis)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .HasConstraintName("[FK_TesisDirector_Tesis]");
             });
         }
     }

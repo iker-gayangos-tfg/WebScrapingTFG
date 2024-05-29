@@ -1,0 +1,16 @@
+.flexContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex {
+    display: flex;
+}
+
+.title {
+    display: flex;
+    color: white;
+    font-size: 40px;
+}

@@ -38,7 +38,7 @@ namespace WebScrapingAPI.Controllers
 
                 driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores");
 
-                var divFacultades = driver.FindElements(By.CssSelector(".investigadores-explorar__category-content")).FirstOrDefault(x => x.Text.Contains("Facultades y Centros de investigación"));
+                var divFacultades = driver.FindElements(By.CssSelector(".investigadores-explorar__category-content")).FirstOrDefault(x => x.Text.Contains("Centros académicos"));
                 if (divFacultades != null)
                 {
                     var facultades = divFacultades.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
@@ -229,7 +229,7 @@ namespace WebScrapingAPI.Controllers
                         await _context.SaveChangesAsync();
                     }
 
-
+                    //Ir a publicaciones
                     driver.Navigate().GoToUrl("https://investigacion.ubu.es/investigadores/" + idInvestigador + "/publicaciones");
 
                     var buttonsTodoPublicaciones = driver.FindElements(By.CssSelector(".btn-secondary")).Where(x => x.Text == "Ver todos");
@@ -469,22 +469,22 @@ namespace WebScrapingAPI.Controllers
                                     journalImpactFactor.Year = yearJCR.FindElement(By.TagName("a")).Text.ToString();
                                 }
                                 var magazineImpactJCR = JCRs.FirstOrDefault(x => x.Text.Contains("impacto de la revista:"));
-                                if (magazineImpactJCR != null)
+                                if (magazineImpactJCR != null && magazineImpactJCR.Text.Split(": ").Count() > 1)
                                 {
                                     journalImpactFactor.MagazineImpact = magazineImpactJCR.Text.Split(": ")[1];
                                 }
                                 var noAutoImpactJCR = JCRs.FirstOrDefault(x => x.Text.Contains("impacto sin autocitas:"));
-                                if (noAutoImpactJCR != null)
+                                if (noAutoImpactJCR != null && noAutoImpactJCR.Text.Split(": ").Count() > 1)
                                 {
                                     journalImpactFactor.NoAutoImpact = noAutoImpactJCR.Text.Split(": ")[1];
                                 }
                                 var articleInfluenceScoreJCR = JCRs.FirstOrDefault(x => x.Text.Contains("Article influence score"));
-                                if (articleInfluenceScoreJCR != null)
+                                if (articleInfluenceScoreJCR != null && articleInfluenceScoreJCR.Text.Split(": ").Count() > 1)
                                 {
                                     journalImpactFactor.ArticleInfluenceScore = articleInfluenceScoreJCR.Text.Split(": ")[1];
                                 }
                                 var majorQueartilJCR = JCRs.FirstOrDefault(x => x.Text.Contains("Cuartil mayor:"));
-                                if (majorQueartilJCR != null)
+                                if (majorQueartilJCR != null && majorQueartilJCR.Text.Split(": ").Count() > 1)
                                 {
                                     journalImpactFactor.MajorQuartil = majorQueartilJCR.Text.Split(": ")[1];
                                 }
@@ -521,12 +521,12 @@ namespace WebScrapingAPI.Controllers
                                     sCImagoJournalRank.Year = yearSCImago.FindElement(By.TagName("a")).Text.ToString();
                                 }
                                 var magazineImpactSCImago = SCImagos.FirstOrDefault(x => x.Text.Contains("Impacto SJR de la revista:"));
-                                if (magazineImpactSCImago != null)
+                                if (magazineImpactSCImago != null && magazineImpactSCImago.Text.Split(": ").Count() > 1)
                                 {
                                     sCImagoJournalRank.SJRImpactMagazine = magazineImpactSCImago.Text.Split(": ")[1];
                                 }
                                 var majorQueartilSCImago = SCImagos.FirstOrDefault(x => x.Text.Contains("Cuartil mayor:"));
-                                if (majorQueartilSCImago != null)
+                                if (majorQueartilSCImago != null && majorQueartilSCImago.Text.Split(": ").Count() > 1)
                                 {
                                     sCImagoJournalRank.MajorQuartil = majorQueartilSCImago.Text.Split(": ")[1];
                                 }
@@ -563,7 +563,7 @@ namespace WebScrapingAPI.Controllers
                                     scopusCitescore.Year = yearScopus.FindElement(By.TagName("a")).Text.ToString();
                                 }
                                 var magazineCitascore = Scopuss.FirstOrDefault(x => x.Text.Contains("CiteScore de la revista:"));
-                                if (magazineCitascore != null)
+                                if (magazineCitascore != null && magazineCitascore.Text.Split(": ").Count() > 1)
                                 {
                                     scopusCitescore.MagazineCitescore = magazineCitascore.Text.Split(": ")[1];
                                 }
@@ -598,12 +598,12 @@ namespace WebScrapingAPI.Controllers
                                     journalCitationIndicator.Year = yearJCI.FindElement(By.TagName("a")).Text.ToString();
                                 }
                                 var magazineJCI = JCIs.FirstOrDefault(x => x.Text.Contains("JCI de la revista"));
-                                if (magazineJCI != null)
+                                if (magazineJCI != null && magazineJCI.Text.Split(": ").Count() > 1)
                                 {
                                     journalCitationIndicator.MagazineJCI = magazineJCI.Text.Split(": ")[1];
                                 }
                                 var majorQueartilJCI = JCIs.FirstOrDefault(x => x.Text.Contains("Cuartil mayor:"));
-                                if (majorQueartilJCI != null)
+                                if (majorQueartilJCI != null && majorQueartilJCI.Text.Split(": ").Count() > 1)
                                 {
                                     journalCitationIndicator.MajorQuartil = majorQueartilJCI.Text.Split(": ")[1];
                                 }
@@ -667,7 +667,7 @@ namespace WebScrapingAPI.Controllers
                                     dialnetRevista.Year = yearDialnet.FindElement(By.TagName("a")).Text.ToString();
                                 }
                                 var magazineImpactDialnet = dialnets.FirstOrDefault(x => x.Text.Contains("Impacto de la revista"));
-                                if (magazineImpactDialnet != null)
+                                if (magazineImpactDialnet != null && magazineImpactDialnet.Text.Split(": ").Count() > 1)
                                 {
                                     dialnetRevista.MagazineImpact = magazineImpactDialnet.Text.Split(": ")[1];
                                 }

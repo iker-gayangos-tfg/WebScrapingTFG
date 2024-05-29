@@ -5,7 +5,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { ContentLayoutComponent } from './modules/content-layout/content-layout.component';
 import { MaterialModule } from './modules/material/material.module';
+import { NavbarComponent } from './modules/navbar/navbar.component';
+import { FooterComponent } from './modules/footer/footer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 const ROUTES: Routes = [
   // {
   //   path: '',
@@ -38,6 +41,8 @@ const ROUTES: Routes = [
   declarations: [
     AppComponent,
     ContentLayoutComponent,
+    NavbarComponent,
+    FooterComponent
   ],  
   imports: [
     BrowserModule,

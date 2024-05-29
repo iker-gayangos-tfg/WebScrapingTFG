@@ -1,0 +1,20 @@
+<mat-sidenav-container>
+  <mat-sidenav #sidenav>
+
+    <mat-nav-list>
+      <ng-container *ngFor="let section of sections">
+        <a mat-list-item [routerLink]="section.path" (click)="sidenav.toggle()" class="link">
+          <span>{{ section.name}}</span>
+      </a>
+      </ng-container>
+    </mat-nav-list>
+
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <a-ui-navbar (sideNavToggle)="sidenav.toggle()"></a-ui-navbar>
+    <main>
+      <router-outlet></router-outlet>
+    </main>
+    <a-ui-footer></a-ui-footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

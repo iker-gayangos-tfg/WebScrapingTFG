@@ -138,7 +138,7 @@ namespace WebScrapingAPI.Controllers
                     var investigadorBd = await _context.Investigadores.FirstAsync(x => x.IdInvestigador == idInvestigador);
 
                     //Facultades
-                    var facultades = datosInvestigador.Where(x => x.Text.Contains("Facultad/Centro"));
+                    var facultades = datosInvestigador.Where(x => x.Text.Contains("Centro académico:"));
                     foreach (var facultad in facultades)
                     {
                         var nombreFacultad = facultad.FindElement(By.TagName("a")).Text.ToString();
@@ -457,10 +457,11 @@ namespace WebScrapingAPI.Controllers
                             }
 
                             //JRC (Journal Impact Factor)
-                            var divJCR = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("(Journal Impact Factor)"));
+                            var divJCR = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Journal Impact Factor - JIF"));
                             if (divJCR != null)
                             {
-                                var JCRs = divJCR.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                var tmpJCRs = divJCR.FindElements(By.TagName("div")).First(x => x.Text.Contains("Journal Impact Factor - JIF"));
+                                var JCRs = tmpJCRs.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
                                 JournalImpactFactor journalImpactFactor = new JournalImpactFactor();
                                 journalImpactFactor.FoPublicacion = publicacionBd.Id;
                                 var yearJCR = JCRs.FirstOrDefault(x => x.Text.Contains("Año"));
@@ -512,7 +513,8 @@ namespace WebScrapingAPI.Controllers
                             var divSCImago = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("SCImago Journal Rank"));
                             if (divSCImago != null)
                             {
-                                var SCImagos = divSCImago.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                var tmpSCImago = divSCImago.FindElements(By.TagName("div")).First(x => x.Text.Contains("SCImago Journal Rank"));
+                                var SCImagos = tmpSCImago.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
                                 SCImagoJournalRank sCImagoJournalRank = new SCImagoJournalRank();
                                 sCImagoJournalRank.FoPublicacion = publicacionBd.Id;
                                 var yearSCImago = SCImagos.FirstOrDefault(x => x.Text.Contains("Año"));
@@ -554,7 +556,8 @@ namespace WebScrapingAPI.Controllers
                             var divScopus = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Scopus CiteScore"));
                             if (divScopus != null)
                             {
-                                var Scopuss = divScopus.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                var tmpScopus = divScopus.FindElements(By.TagName("div")).First(x => x.Text.Contains("Scopus CiteScore"));
+                                var Scopuss = tmpScopus.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
                                 ScopusCitescore scopusCitescore = new ScopusCitescore();
                                 scopusCitescore.FoPublicacion = publicacionBd.Id;
                                 var yearScopus = Scopuss.FirstOrDefault(x => x.Text.Contains("Año"));
@@ -586,10 +589,11 @@ namespace WebScrapingAPI.Controllers
 
 
                             //Journal Citation Indicator (JCI)
-                            var divJCI = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Journal Citation Indicator (JCI)"));
+                            var divJCI = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Journal Citation Indicator - JCI"));
                             if (divJCI != null)
                             {
-                                var JCIs = divJCI.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                var tmpJCIs = divJCI.FindElements(By.TagName("div")).First(x => x.Text.Contains("Journal Citation Indicator - JCI"));
+                                var JCIs = tmpJCIs.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
                                 JournalCitationIndicator journalCitationIndicator = new JournalCitationIndicator();
                                 journalCitationIndicator.FoPublicacion = publicacionBd.Id;
                                 var yearJCI = JCIs.FirstOrDefault(x => x.Text.Contains("Año"));
@@ -631,7 +635,8 @@ namespace WebScrapingAPI.Controllers
                             var divDimensions = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Datos actualizados a fecha"));
                             if (divDimensions != null)
                             {
-                                var dimensionss = divDimensions.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                var tmpDimensions = divDimensions.FindElements(By.TagName("div")).First(x => x.Text.Contains("Datos actualizados a fecha"));
+                                var dimensionss = tmpDimensions.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
                                 Dimensions dimensions = new Dimensions();
                                 dimensions.FoPublicacion = publicacionBd.Id;
                                 var totalDimensions = dimensionss.FirstOrDefault(x => x.Text.Contains("Citas totales:"));
@@ -658,7 +663,8 @@ namespace WebScrapingAPI.Controllers
                             var divDialnet = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Índice Dialnet de Revistas"));
                             if (divDialnet != null)
                             {
-                                var dialnets = divDialnet.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
+                                var tmpDialnets = divDialnet.FindElements(By.TagName("div")).First(x => x.Text.Contains("Índice Dialnet de Revistas"));
+                                var dialnets = tmpDialnets.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
                                 DialnetRevista dialnetRevista = new DialnetRevista();
                                 dialnetRevista.FoPublicacion = publicacionBd.Id;
                                 var yearDialnet = dialnets.FirstOrDefault(x => x.Text.Contains("Año"));

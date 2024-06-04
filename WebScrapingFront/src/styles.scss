@@ -4,3 +4,19 @@
 body {
     font-family: 'Roboto', sans-serif;
 }
+
+.sb-success, .sb-error, .sb-info
+{
+    text-align: center;
+    justify-content: center;
+    color: #fff;
+    *
+    {
+        justify-content: center;
+        color: #fff;
+        margin: 0 auto;
+    }
+}
+.sb-success { background-color: #569142; }
+.sb-error { background-color: #a70a2d; }
+.sb-info { background-color: #3785e5; }

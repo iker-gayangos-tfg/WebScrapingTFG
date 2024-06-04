@@ -1,0 +1,68 @@
+<div>
+    <div class="flexContainer">
+        <div class="titulo">Investigadores</div>
+        <div>
+            <mat-form-field appearance="outline">
+              <mat-label>Investigador</mat-label>
+              <input matInput [formControl]="investigadorCtrl" autocomplete="off">
+            </mat-form-field>
+          </div>
+        <div class="btn-bind" [ngClass]="{'invisible': !selection.hasValue() || selection.selected.length < 2 }" >
+            <button mat-button (click)="bindInvestigators()">
+              <div>Fusionar investigadores</div>
+              <mat-icon>add_link</mat-icon>
+            </button>
+        </div>
+    </div>
+    <div class="cnt-margin">
+        <mat-table class="fondo" [dataSource]="investigadoresDatasource">
+            <ng-container matColumnDef="select">
+                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <mat-cell *matCellDef="let row" class="border-none">
+                  <mat-checkbox class="custom-checkbox" (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)">
+                  </mat-checkbox>
+                </mat-cell>
+              </ng-container>
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>Id</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.id }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="nombre">
+                <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.nombre }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="apellidos">
+                <mat-header-cell *matHeaderCellDef>Apellidos</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.apellidos }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="idInvestigador">
+                <mat-header-cell *matHeaderCellDef>IdInvestigador</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.idInvestigador }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="email">
+                <mat-header-cell *matHeaderCellDef>Email</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.email }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="departamento">
+                <mat-header-cell *matHeaderCellDef>Departamento</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.departamento.name }} 
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento'];"></mat-row>
+        </mat-table>
+        <mat-paginator [length]="totalInvestigadores" [pageSize]="50" [pageSizeOptions]="[50, 100]" aria-label="Seleccionar página"></mat-paginator>
+    </div>
+</div>

@@ -8,13 +8,14 @@ import { MaterialModule } from './modules/material/material.module';
 import { NavbarComponent } from './modules/navbar/navbar.component';
 import { FooterComponent } from './modules/footer/footer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const ROUTES: Routes = [
-  // {
-  //   path: '',
-  //   redirectTo: '/investigadores',
-  //   pathMatch: 'full'
-  // },
+  {
+    path: '',
+    redirectTo: '/investigadores',
+    pathMatch: 'full'
+  },
   {
     path: '',
     component: ContentLayoutComponent,
@@ -49,6 +50,7 @@ const ROUTES: Routes = [
     HttpClientModule,
     MaterialModule,
     BrowserAnimationsModule,
+    MatSnackBarModule,
     RouterModule.forRoot(ROUTES),
     
   ],

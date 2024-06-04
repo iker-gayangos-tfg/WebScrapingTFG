@@ -139,5 +139,91 @@ namespace WebScrapingAPI.Controllers
 
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
+
+
+        [HttpPut]
+        public async Task<IActionResult> BindInvestigators(InvestigadorBindRequest investigadorBindRequest)
+        {
+            var investigadorDB = _context.Investigadores.FirstOrDefault(x => x.Id == investigadorBindRequest.Id);
+            if (investigadorDB == null)
+            {
+                return NotFound();
+            }
+
+            foreach(var investigadorId in investigadorBindRequest.InvestigatorIds)
+            {   
+                var investigatorToUnbind = _context.Investigadores.FirstOrDefault(x => x.Id == investigadorId);
+                if(investigatorToUnbind != null)
+                {
+                    var investigadorGruposInvestigacionDBs = _context.InvestigadoresGruposInvestigacion.Where(x => x.FoInvestigador == investigadorId);
+                    foreach(var investigadorGruposInvestigacionDB in investigadorGruposInvestigacionDBs)
+                    {
+                        _context.InvestigadoresGruposInvestigacion.Where(x => x.Id == investigadorGruposInvestigacionDB.Id).ExecuteDelete();
+                        _context.InvestigadoresGruposInvestigacion.Remove(investigadorGruposInvestigacionDB);
+                    }
+
+                    var investigadorProgramasDoctoradoDBs = _context.InvestigadoresProgramasDoctorado.Where(x => x.FoInvestigador == investigadorId);
+                    foreach (var investigadorProgramasDoctoradoDB in investigadorProgramasDoctoradoDBs)
+                    {
+                        _context.InvestigadoresProgramasDoctorado.Where(x => x.Id == investigadorProgramasDoctoradoDB.Id).ExecuteDelete();
+                        _context.InvestigadoresProgramasDoctorado.Remove(investigadorProgramasDoctoradoDB);
+                    }
+
+                    var investigadorFacultadesDBs = _context.InvestigadoresFacultades.Where(x => x.FoInvestigador == investigadorId);
+                    foreach (var investigadorFacultadesDB in investigadorFacultadesDBs)
+                    {
+                        _context.InvestigadoresFacultades.Where(x => x.Id == investigadorFacultadesDB.Id).ExecuteDelete();
+                        _context.InvestigadoresFacultades.Remove(investigadorFacultadesDB);
+                    }
+
+                    var investigadorAreasDBs = _context.InvestigadoresAreas.Where(x => x.FoInvestigador == investigadorId);
+                    foreach (var investigadorAreasDB in investigadorAreasDBs)
+                    {
+                        _context.InvestigadoresAreas.Where(x => x.Id == investigadorAreasDB.Id).ExecuteDelete();
+                        _context.InvestigadoresAreas.Remove(investigadorAreasDB);
+                    }
+
+                    var investigadorPublicacionesDBs = _context.InvestigadoresPublicaciones.Where(x => x.FoInvestigador == investigadorId);
+                    foreach (var investigadorPublicacionesDB in investigadorPublicacionesDBs)
+                    {
+                        investigadorPublicacionesDB.FoInvestigador = investigadorDB.Id;
+                        _context.Update(investigadorPublicacionesDB);
+                    }
+
+                    var investigadorPatentesDBs = _context.InvestigadoresPatentes.Where(x => x.FoInvestigador == investigadorId);
+                    foreach (var investigadorPatentesDB in investigadorPatentesDBs)
+                    {
+                        investigadorPatentesDB.FoInvestigador = investigadorDB.Id;
+                        _context.Update(investigadorPatentesDB);
+                    }
+
+                    var tesisDirectoresDBs = _context.TesisDirectores.Where(x => x.FoInvestigador == investigadorId);
+                    foreach (var tesisDirectoresDB in tesisDirectoresDBs)
+                    {
+                        tesisDirectoresDB.FoInvestigador = investigadorDB.Id;
+                        _context.Update(tesisDirectoresDB);
+                    }
+
+                    var tesisDBs = _context.Tesis.Where(x => x.FoInvestigador == investigadorId);
+                    foreach (var tesisDB in tesisDBs)
+                    {
+                        tesisDB.FoInvestigador = investigadorDB.Id;
+                        _context.Update(tesisDB);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    _context.Investigadores.Where(x => x.Id == investigadorId).ExecuteDelete();
+                    _context.Investigadores.Remove(investigatorToUnbind);
+                    await _context.SaveChangesAsync();
+
+                }
+
+
+            }
+
+            return Ok();
+        }
+
+
     }
 }

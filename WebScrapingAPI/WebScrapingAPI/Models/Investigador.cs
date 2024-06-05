@@ -72,4 +72,10 @@ namespace WebScrapingAPI.Models
         public required List<int> InvestigatorIds { get; set; }
     }
 
+    public class InvestigadorListResponse
+    {
+        public int Id { get; set; }
+        public string? FullName { get; set; }
+    }
+
 }

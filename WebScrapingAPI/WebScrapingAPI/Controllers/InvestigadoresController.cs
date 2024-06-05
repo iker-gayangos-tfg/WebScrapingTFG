@@ -140,6 +140,25 @@ namespace WebScrapingAPI.Controllers
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
 
+        [HttpGet]
+        public ActionResult<List<InvestigadorListResponse>> GetInvestigadoresList()
+        {
+            var investigadoresDB = _context.Investigadores.Include(x => x.Departamento).Take(100).ToList().Select(x => x.ConvertToResponse()).ToList();
+
+            List<InvestigadorListResponse> resultList = new();
+
+            foreach (var investigador in _context.Investigadores.Where(x => x.IdInvestigador != null && x.Apellidos != null).ToList())
+            {
+                resultList.Add(new InvestigadorListResponse
+                {
+                    Id = investigador.Id,
+                    FullName = investigador.Nombre + " " + investigador.Apellidos
+                });
+            }
+
+            return Ok(resultList);
+        }
+
 
         [HttpPut]
         public async Task<IActionResult> BindInvestigators(InvestigadorBindRequest investigadorBindRequest)

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-// import { FlexLayoutModule } from '@angular/flex-layout';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,7 +35,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 @NgModule({
   imports: [
     CommonModule,
-    // FlexLayoutModule,
+    FlexLayoutModule,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
@@ -67,7 +67,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatProgressBarModule,
   ],
   exports: [
-    // FlexLayoutModule,
+    FlexLayoutModule,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,

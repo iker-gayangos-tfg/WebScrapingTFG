@@ -21,6 +21,10 @@ export class WebScrapingService {
     });
   }
 
+  getInvestigadoresList() :Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}/Investigadores/GetInvestigadoresList`);
+  }
+
   bindInvestigators(data: any) {
     return this.httpClient.post(`${this.apiUrl}/Investigadores/BindInvestigators`, data);
   }

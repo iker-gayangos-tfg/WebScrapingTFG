@@ -34,6 +34,8 @@
     font-weight: 600;
     max-height: 52px !important;
     white-space: nowrap;
+    margin-right: 40px;
+    height: 60px;
 }
 
 .invisible {
@@ -43,23 +45,22 @@
 .mat-form-field {
     width: 100%;
     margin: 16px 0;
-  }
-  
-.mat-input-element {
-padding: 12px;
-font-size: 16px;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    width: 0% !important;
 }
 
 .mat-form-field.mat-focused .mat-form-field-label {
-color: #3f51b5;
+    color: #3f51b5;
 }
 
 .mat-form-field-underline {
-background-color: #3f51b5;
+    background-color: #3f51b5;
 }
 
 .mat-form-field-ripple {
-background-color: #3f51b5;
+    background-color: #3f51b5;
 }
 
 .custom-dialog-container {overflow-y: scroll; max-width: 100vw !important; background-color: white;}

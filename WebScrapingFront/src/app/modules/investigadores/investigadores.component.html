@@ -1,18 +1,34 @@
-<div>
-    <div class="flexContainer">
-        <div class="titulo">Investigadores</div>
-        <div>
-            <mat-form-field appearance="outline">
-              <mat-label>Investigador</mat-label>
-              <input matInput [formControl]="investigadorCtrl" autocomplete="off">
-            </mat-form-field>
-          </div>
-        <div class="btn-bind" [ngClass]="{'invisible': !selection.hasValue() || selection.selected.length < 2 }" >
-            <button mat-button (click)="bindInvestigators()">
-              <div>Fusionar investigadores</div>
-              <mat-icon>add_link</mat-icon>
-            </button>
-        </div>
+<div fxFlex fxLayout="column">
+    <div fxFlex fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="start center">
+        <div fxFlex="15" class="titulo">Investigadores</div>
+        <mat-form-field fxFlex="15" fxLayoutAlign="center center" appearance="outline">
+            <mat-label>Investigador</mat-label>
+            <input matInput [formControl]="investigadorCtrl" autocomplete="off">
+        </mat-form-field>
+        <mat-form-field fxFlex fxLayoutAlign="center center" appearance="outline">
+            <mat-chip-grid #chipListInvestigadores style="width: 100%">
+                <mat-chip-row *ngFor="let investigador of investigadorNames" (removed)="removeInvestigador(investigador)">
+                    {{ investigador.fullName }}
+                    <mat-icon mat-icon-button matChipRemove>close</mat-icon>
+                </mat-chip-row>
+                <input
+                [placeholder]="'Investigadores relacionados'"
+                #investigadorInput
+                [formControl]="investigadorNamesCtrl"
+                [matAutocomplete]="autoInvestigadores"
+                [matChipInputFor]="chipListInvestigadores"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+            </mat-chip-grid>
+            <mat-autocomplete #autoInvestigadores="matAutocomplete" (optionSelected)="selectedInvestigador($event)">
+                <mat-option *ngFor="let investigador of filteredInvestigadorNames | async" [value]="investigador">
+                    <span>{{ investigador.fullName }}</span>
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <button mat-button fxFlex="15" fxLayoutAlign="center center" class="btn-bind" [ngClass]="{'invisible': !selection.hasValue() || selection.selected.length < 2 }" (click)="bindInvestigators()">
+            <div>Fusionar investigadores</div>
+            <mat-icon>add_link</mat-icon>
+        </button>
     </div>
     <div class="cnt-margin">
         <mat-table class="fondo" [dataSource]="investigadoresDatasource">

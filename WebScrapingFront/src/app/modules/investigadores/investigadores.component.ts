@@ -1,10 +1,13 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { WebScrapingService } from '../../services/web-scraping.service';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { BindInvestigatorComponent } from './bind-investigator/bind-investigator.component';
+import { Observable, map, startWith } from 'rxjs';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'investigadores',
@@ -19,6 +22,15 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
   totalInvestigadores = 0;
 
   investigadorCtrl = new FormControl(null);
+
+  investigadorNamesCtrl = new FormControl<any>(null);
+  filteredInvestigadorNames!: Observable<any[]>;
+  allInvestigadorNames: any[] = [];
+  investigadorNames: any[] = [];
+
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  
+  @ViewChild('investigadorInput') investigadorInput!: ElementRef<HTMLInputElement>;
 
   public selection: SelectionModel<any>;
 
@@ -40,22 +52,64 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
   }
 
   ngAfterViewInit(): void {
-    this.updateTable()
+    this.updateTable();
+    this.loadLists();
   }
 
   updateTable() {
+    var idsInvestigadoresRelated: number[] = []
+    this.investigadorNames.forEach(element => {
+      idsInvestigadoresRelated.push(element.id);
+    });
     this.webScrapingService.getInvestigadores({
       Nombre: this.investigadorCtrl.value ? this.investigadorCtrl.value : '',
-      InvestigatorIds: [1, 4],
+      InvestigatorIds: idsInvestigadoresRelated,
       Page: this.paginator.pageIndex,
       Limit: this.paginator.pageSize
     }).subscribe(
       res => {
-        console.log(res);
         this.totalInvestigadores = res.total;
         this.investigadoresDatasource = res.items;
       }
     );
+  }
+
+  loadLists() {
+    this.webScrapingService.getInvestigadoresList().subscribe(
+      res => {
+        this.allInvestigadorNames = res;
+        this.filteredInvestigadorNames = this.investigadorNamesCtrl.valueChanges.pipe(
+          startWith(''),
+          map((value: any) => {
+            const fullName = typeof value === 'string' ? value : value?.fullname;
+            return fullName ? this._filterInvestigador(fullName as string) : this.allInvestigadorNames.slice();
+          }),
+        );
+      }
+    );
+  }
+
+  private _filterInvestigador(value: any): any[] {
+    var filterValue = value.toLowerCase();
+    return this.allInvestigadorNames.filter(investigador => investigador.fullName.toLowerCase().includes(filterValue));
+  };
+
+  removeInvestigador(investigador: any): void {
+    const index = this.investigadorNames.indexOf(investigador);
+    if (index >= 0) {
+      this.investigadorNames.splice(index, 1);
+    }
+    this.allInvestigadorNames.push(investigador)
+    this.investigadorNamesCtrl.reset();
+    this.updateTable();
+  }
+
+  selectedInvestigador(event: MatAutocompleteSelectedEvent): void {
+    this.investigadorNames.push(event.option.value);
+    this.allInvestigadorNames.splice(this.allInvestigadorNames.indexOf(event.option.value), 1)
+    this.investigadorInput.nativeElement.value = '';
+    this.investigadorNamesCtrl.reset();
+    this.updateTable();
   }
 
   bindInvestigators() {

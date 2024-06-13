@@ -139,6 +139,28 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
     });
   }
 
+  openView(element: any) {
+    const dialogRef = this.dialog.open(InvestigatorViewComponent, {
+      maxHeight: '99vh',
+      width: '99%',
+      maxWidth: '99%',
+      data: {
+        element
+      },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {  
+      if (result) {
+        this.updateTable();
+      }
+    });
+  }
+
+  openInvestigator(element: any) {
+    window.open("https://investigacion.ubu.es/investigadores/" + element.idInvestigador + "/detalle");
+  }
+
 
 }
 

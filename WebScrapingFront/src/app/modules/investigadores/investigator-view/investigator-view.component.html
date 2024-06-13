@@ -1,0 +1,101 @@
+<div fxFlex fxLayout="column" style="padding: 0 40px">
+  <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+    <h2 fxFlex>Lista con publicaciones de {{ data.element.nombre }} {{ data.element.apellidos }}</h2>
+    <button mat-icon-button (click)="closeModal()" matTooltip="Cerrar modal">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div fxFlex>
+    <mat-table class="fondo" [dataSource]="publications">
+      <ng-container matColumnDef="title">
+          <mat-header-cell *matHeaderCellDef>Título</mat-header-cell> 
+          <mat-cell *matCellDef="let element" [matTooltip]="element.title">
+              {{ parseTitle(element.title) }} 
+          </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="magazine">
+        <mat-header-cell *matHeaderCellDef class="specialWidth4">Revista</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth4" [matTooltip]="element.magazine">
+            {{ parseText(element.magazine) }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="book">
+        <mat-header-cell *matHeaderCellDef class="specialWidth4">Libro</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth4" [matTooltip]="element.book">
+            {{ parseText(element.book) }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="bookCollection">
+        <mat-header-cell *matHeaderCellDef class="specialWidth4">Colección</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth4" [matTooltip]="element.bookCollection">
+            {{ parseText(element.bookCollection) }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="editorial">
+        <mat-header-cell *matHeaderCellDef class="specialWidth4">Editorial</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth4" [matTooltip]="element.editorial">
+            {{ parseText(element.editorial) }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="ISSN">
+        <mat-header-cell *matHeaderCellDef class="specialWidth3">ISSN</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth3" [matTooltip]="element.issn">
+            {{ parseText2(element.issn) }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="ISBN">
+        <mat-header-cell *matHeaderCellDef class="specialWidth3">ISBN</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth3" [matTooltip]="element.isbn">
+            {{ parseText2(element.isbn) }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="year">
+        <mat-header-cell *matHeaderCellDef class="specialWidth">Año</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth">
+            {{ element.year }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="volumen">
+        <mat-header-cell *matHeaderCellDef class="specialWidth">Volumen</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth">
+            {{ element.volumen }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="number">
+        <mat-header-cell *matHeaderCellDef class="specialWidth">Número</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth">
+            {{ element.number }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="pages">
+        <mat-header-cell *matHeaderCellDef class="specialWidth">Páginas</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth">
+            {{ element.pages }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef class="specialWidth2">Tipo</mat-header-cell> 
+        <mat-cell *matCellDef="let element" class="specialWidth2">
+            {{ element.type }} 
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef class="justify-center" class="actionsWidth">Acciones</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="actionsWidth">
+          <div fxLayout="row" fxFill fxLayoutAlign="center center">
+            <button mat-icon-button style="color: #aa223c" [matTooltip]="'Ir a publicación'" (click)="openPublication(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button style="color: #A9B0B4" [matTooltip]="'Ver indicadores'" (click)="openIndicators(element)">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: tableColumns;"></mat-row>
+    </mat-table>
+    <mat-paginator [length]="totalPublications" [pageSize]="15" aria-label="Seleccionar página"></mat-paginator>
+  </div>
+</div>

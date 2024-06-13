@@ -55,7 +55,7 @@ namespace WebScrapingAPI.Models
         public string? Apellidos { get; set; }
         public string? IdInvestigador { get; set; }
         public string? Email { get; set; }
-        public DepartamentoResponse Departamento { get; set; }
+        public DepartamentoResponse? Departamento { get; set; }
     }
 
     public class FilterInvestigadores

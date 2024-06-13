@@ -40,4 +40,11 @@ export class WebScrapingService {
       params: data
     });
   }
+
+  getPublicacionesInvestigadorCompleto(data: any) {
+    return this.httpClient.get<any>(`${this.apiUrl}/Investigadores/GetPublicacionesInvestigadorCompleto`, {
+      params: data
+    });
+  }
+  
 }

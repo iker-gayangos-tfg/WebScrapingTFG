@@ -22,3 +22,17 @@
     flex: 0 0 180px;
     justify-content: center;
 }
+
+.btn-excel {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 10px 20px;
+    font-size: 1.15rem;
+    line-height: 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    border: 4px solid #F1F3F4;
+    font-weight: 600;
+    max-height: 52px !important;
+    white-space: nowrap;
+}

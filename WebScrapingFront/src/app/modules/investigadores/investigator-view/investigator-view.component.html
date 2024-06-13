@@ -5,6 +5,12 @@
       <mat-icon>close</mat-icon>
     </button>
   </div>
+  <div fxLayout="row" fxLayoutAlign="end center" style="margin-bottom: 20px;">
+    <button fxFlex="220px" class="btn-excel" (click)="exportExcel()">
+      <div fxFlex>Exportar a excel</div>
+      <mat-icon fxFlex="20">description</mat-icon>
+    </button>
+  </div>
   <div fxFlex>
     <mat-table class="fondo" [dataSource]="publications">
       <ng-container matColumnDef="title">

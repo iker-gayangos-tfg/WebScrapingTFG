@@ -5,9 +5,10 @@ import { FormControl } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatDialog } from '@angular/material/dialog';
 import { BindInvestigatorComponent } from './bind-investigator/bind-investigator.component';
-import { Observable, map, startWith } from 'rxjs';
+import { Observable, debounceTime, map, startWith } from 'rxjs';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { InvestigatorViewComponent } from './investigator-view/investigator-view.component';
 
 @Component({
   selector: 'investigadores',
@@ -44,7 +45,7 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
     this.selection = new SelectionModel<any>(allowMultiSelect, initialSelection);
   }
   ngOnInit(): void {
-    this.investigadorCtrl.valueChanges.subscribe(
+    this.investigadorCtrl.valueChanges.pipe(debounceTime(500)).subscribe(
       () => {
         this.updateTable();
       }
@@ -54,9 +55,15 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
   ngAfterViewInit(): void {
     this.updateTable();
     this.loadLists();
+    this.paginator.page.subscribe(
+      () => {
+        this.updateTable();
+      }
+    );
   }
 
   updateTable() {
+    this.isLoading = true;
     var idsInvestigadoresRelated: number[] = []
     this.investigadorNames.forEach(element => {
       idsInvestigadoresRelated.push(element.id);
@@ -70,6 +77,10 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
       res => {
         this.totalInvestigadores = res.total;
         this.investigadoresDatasource = res.items;
+        this.isLoading = false;
+      }, 
+      err => {
+        this.isLoading = false;
       }
     );
   }

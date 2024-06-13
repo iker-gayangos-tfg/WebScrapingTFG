@@ -76,8 +76,21 @@
                     {{ element.departamento.name }} 
                 </mat-cell>
             </ng-container>
-            <mat-header-row *matHeaderRowDef="['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento']"></mat-header-row>
-            <mat-row *matRowDef="let row; columns: ['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento'];"></mat-row>
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef class="justify-center" class="actionsWidth">Acciones</mat-header-cell>
+                <mat-cell *matCellDef="let element" class="actionsWidth">
+                  <div fxLayout="row" fxFill fxLayoutAlign="center center">
+                    <button mat-icon-button style="color: #aa223c" [matTooltip]="'Ir a investigador'" (click)="openInvestigator(element)" *ngIf="element.idInvestigador">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    <button mat-icon-button style="color: #A9B0B4" [matTooltip]="'Ver publicaciones'" (click)="openView(element)">
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </div>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento', 'actions']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento', 'actions'];"></mat-row>
         </mat-table>
         <mat-paginator [length]="totalInvestigadores" [pageSize]="50" [pageSizeOptions]="[50, 100]" aria-label="Seleccionar página"></mat-paginator>
     </div>

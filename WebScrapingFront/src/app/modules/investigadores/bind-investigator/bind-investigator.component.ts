@@ -48,10 +48,6 @@ export class BindInvestigatorComponent {
     }
   }
 
-  public close(dialogResult?: any) {
-    this.dialogRef.close(dialogResult);
-  }
-
   public onSubmit() {
     var idInvestigatorSelected = this.selection.selected[0].id;
     var idsInvestigatorsToBind: any[] = [];
@@ -68,7 +64,7 @@ export class BindInvestigatorComponent {
     }).subscribe(
       () => {
         this.snackbar.openSnackBar('Investigadores fusionados correctamente', 'sb-success');
-        this.closeModal()
+        this.closeModal(true)
       },
       () => {
         this.snackbar.openSnackBar('Los investigadores no se han podido fusionadar', 'sb-error');
@@ -76,7 +72,7 @@ export class BindInvestigatorComponent {
     )
   }
 
-  closeModal() {
-    this.dialogRef.close()
+  closeModal(dialogResult?: any) {
+    this.dialogRef.close(dialogResult);
   }
 }

@@ -55,10 +55,10 @@
       <mat-row *matRowDef="let row; columns: ['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento'];"></mat-row>
     </mat-table>
   
-    <div style="text-align: center; margin: 20px 0">
-      <button class="btn-save flexContainer" (click)="onSubmit()" [disabled]="btnDisabled">
-        <div>Guardar</div>
-        <mat-icon fxFlex="15">save</mat-icon>
+    <div fxLayout="row" fxLayoutAlign="center center" style="margin-bottom: 20px;">
+      <button fxFlex="160px" class="btn-save" (click)="onSubmit()" [disabled]="btnDisabled">
+        <div fxFlex>Guardar</div>
+        <mat-icon fxFlex="20">save</mat-icon>
       </button>
     </div>
   </div>

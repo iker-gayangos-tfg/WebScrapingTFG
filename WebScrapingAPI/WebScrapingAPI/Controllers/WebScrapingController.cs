@@ -426,34 +426,38 @@ namespace WebScrapingAPI.Controllers
                             var divAppointmentsReceived = indicadoresPublication.FirstOrDefault(x => x.Text.Contains("Citas recibidas"));
                             if (divAppointmentsReceived != null)
                             {
-                                var appointmentsReceived = divAppointmentsReceived.FindElement(By.TagName("ul")).FindElements(By.TagName("li"));
-                                CitaRecibida citaRecibida = new CitaRecibida();
-                                citaRecibida.FoPublicacion = publicacionBd.Id;
-                                var scopus = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Citas en Scopus"));
-                                if (scopus != null)
+                                var tableAppointmentsReceived = divAppointmentsReceived.FindElements(By.TagName("table")).FirstOrDefault();
+                                if (tableAppointmentsReceived != null)
                                 {
-                                    citaRecibida.ScopusCount = scopus.FindElement(By.TagName("a")).Text.ToString();
-                                    citaRecibida.ScopusUrl = scopus.FindElement(By.TagName("a")).GetAttribute("href").ToString();
-                                    citaRecibida.ScopusDate = scopus.FindElements(By.TagName("span")).FirstOrDefault(x => x.Text.Contains("(")).Text.ToString();
-                                }
+                                    var appointmentsReceived = divAppointmentsReceived.FindElement(By.TagName("tbody")).FindElements(By.TagName("tr"));
+                                    CitaRecibida citaRecibida = new CitaRecibida();
+                                    citaRecibida.FoPublicacion = publicacionBd.Id;
+                                    var scopus = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Scopus"));
+                                    if (scopus != null)
+                                    {
+                                        citaRecibida.ScopusCount = scopus.FindElement(By.TagName("a")).Text.ToString();
+                                        citaRecibida.ScopusUrl = scopus.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                                        citaRecibida.ScopusDate = scopus.FindElements(By.TagName("td")).First(x => x.Text.Contains("-")).Text.ToString();
+                                    }
 
-                                var webScience = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Citas en Web of Science"));
-                                if (webScience != null)
-                                {
-                                    citaRecibida.WebScienceCount = webScience.FindElement(By.TagName("a")).Text.ToString();
-                                    citaRecibida.WebScienceUrl = webScience.FindElement(By.TagName("a")).GetAttribute("href").ToString();
-                                    citaRecibida.WebScienceDate = webScience.FindElements(By.TagName("span")).FirstOrDefault(x => x.Text.Contains("(")).Text.ToString();
-                                }
+                                    var webScience = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Web of Science"));
+                                    if (webScience != null)
+                                    {
+                                        citaRecibida.WebScienceCount = webScience.FindElement(By.TagName("a")).Text.ToString();
+                                        citaRecibida.WebScienceUrl = webScience.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                                        citaRecibida.WebScienceDate = webScience.FindElements(By.TagName("td")).First(x => x.Text.Contains("-")).Text.ToString();
+                                    }
 
-                                var dimensions = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Citas en Dimensions"));
-                                if (dimensions != null)
-                                {
-                                    citaRecibida.DimensionsCount = dimensions.FindElement(By.TagName("a")).Text.ToString();
-                                    citaRecibida.DimensionsUrl = dimensions.FindElement(By.TagName("a")).GetAttribute("href").ToString();
-                                    citaRecibida.DimensionsDate = dimensions.FindElements(By.TagName("span")).FirstOrDefault(x => x.Text.Contains("(")).Text.ToString();
+                                    var dimensions = appointmentsReceived.FirstOrDefault(x => x.Text.Contains("Dimensions (totales)"));
+                                    if (dimensions != null)
+                                    {
+                                        citaRecibida.DimensionsCount = dimensions.FindElement(By.TagName("a")).Text.ToString();
+                                        citaRecibida.DimensionsUrl = dimensions.FindElement(By.TagName("a")).GetAttribute("href").ToString();
+                                        citaRecibida.DimensionsDate = dimensions.FindElements(By.TagName("td")).First(x => x.Text.Contains("-")).Text.ToString();
+                                    }
+                                    _context.CitasRecibidas.Add(citaRecibida);
+                                    await _context.SaveChangesAsync();
                                 }
-                                _context.CitasRecibidas.Add(citaRecibida);
-                                await _context.SaveChangesAsync();
                             }
 
                             //JRC (Journal Impact Factor)
@@ -927,7 +931,20 @@ namespace WebScrapingAPI.Controllers
                             }
                         }
                     }
+
+
                 }
+
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         public class FacultaPrueba
         {
             public string? Nombre { get; set; }

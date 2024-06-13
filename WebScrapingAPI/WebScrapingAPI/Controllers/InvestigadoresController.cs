@@ -286,6 +286,36 @@ namespace WebScrapingAPI.Controllers
             return Ok(publicacionDB);
 
         }
+
+
+        [HttpGet]
+        public ActionResult GetPublicacionesInvestigadorCompleto([FromQuery] int idInvestigador)
+        {
+            List<int> publicacionesId = new List<int>();
+
+            var investigadorPublicacionDB = _context.InvestigadoresPublicaciones.Where(x => x.FoInvestigador == idInvestigador);
+
+            foreach (var investigadorPublicacion in investigadorPublicacionDB)
+            {
+                publicacionesId.Add(investigadorPublicacion.FoPublicacion);
+            }
+
+            var publicacionesDB = _context.Publicaciones
+                .Include(x => x.CitaRecibida)
+                .Include(x => x.JournalImpactFactor)
+                    .ThenInclude(x => x.JournalImpactFactorAreas)
+                .Include(x => x.SCImagoJournalRank)
+                    .ThenInclude(x => x.SCImagoJournalRankAreas)
+                .Include(x => x.ScopusCitescore)
+                    .ThenInclude(x => x.ScopusCitescoreAreas)
+                .Include(x => x.JournalCitationIndicator)
+                    .ThenInclude(x => x.JournalCitationIndicatorAreas)
+                .Include(x => x.Dimensions)
+                .Include(x => x.DialnetRevista)
+                .Where(x => publicacionesId.Contains(x.Id));
+
+            return Ok(publicacionesDB);
+
         }
 
 

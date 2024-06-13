@@ -236,9 +236,34 @@ namespace WebScrapingAPI.Controllers
         }
 
 
+        [HttpGet]
+        public ActionResult<PagedCollectionResponse<Publicacion>> GetPublicacionesInvestigador([FromQuery] FilterPublicaciones filter)
+        {
+            List<int> publicacionesId = new List<int>();
+
+            var investigadorPublicacionDB = _context.InvestigadoresPublicaciones.Where(x=> x.FoInvestigador == filter.IdInvestigador);
+
+            foreach(var investigadorPublicacion in investigadorPublicacionDB)
+            {
+                publicacionesId.Add(investigadorPublicacion.FoPublicacion);
             }
 
-            return Ok();
+            var publicacionesDB = _context.Publicaciones.Where(x => publicacionesId.Contains(x.Id)).AsQueryable();
+
+            // Aplicar paginación
+            var pagedInvestigadores = publicacionesDB
+                .Skip(filter.Page * filter.Limit)
+                .Take(filter.Limit)
+                .ToList();
+
+            var result = new PagedCollectionResponse<Publicacion>
+            {
+                Items = pagedInvestigadores.ToList(),
+                Total = publicacionesDB.Count()
+            };
+
+            return Ok(result);
+        }
         }
 
 

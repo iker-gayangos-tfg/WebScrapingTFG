@@ -26,6 +26,18 @@ export class WebScrapingService {
   }
 
   bindInvestigators(data: any) {
-    return this.httpClient.post(`${this.apiUrl}/Investigadores/BindInvestigators`, data);
+    return this.httpClient.put(`${this.apiUrl}/Investigadores/BindInvestigators`, data);
+  }
+
+  getPublicacionesInvestigador(data: any) :Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}/Investigadores/GetPublicacionesInvestigador`, {
+      params: data
+    });
+  }
+
+  getIndicadoresPublicacion(data: any) :Observable<any> {
+    return this.httpClient.get<any>(`${this.apiUrl}/Investigadores/GetIndicadoresPublicacion`, {
+      params: data
+    });
   }
 }

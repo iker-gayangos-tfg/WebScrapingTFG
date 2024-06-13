@@ -1,0 +1,102 @@
+<div fxFlex fxLayout="column" style="padding: 0 40px">
+  <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+    <h2 fxFlex>Indicadores de la publicación</h2>
+    <button mat-icon-button (click)="closeModal()" matTooltip="Cerrar modal">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div fxLayout="row" gdColumns="1fr 1fr" style="grid-row-gap: 50px; grid-column-gap: 50px; margin-bottom: 50px;">
+    <div fxFlex fxLayout="column" class="fondo" *ngIf="indicators.citaRecibida">
+      <h4 fxFlex>Citas recibidas</h4>
+      <div fxFlex fxLayout="row" fxLayoutAlign="start center" *ngIf="indicators.citaRecibida.scopusCount">
+        <li fxFlex="200px">Scopus</li>
+        <div fxFlex="200px">Número de citas: {{ indicators.citaRecibida.scopusCount }}</div>
+        <div fxFlex="200px">Fecha: {{ indicators.citaRecibida.scopusDate }}</div>
+        <button mat-icon-button style="color: #aa223c" [matTooltip]="'Ir a Scopus'" (click)="openLink(indicators.citaRecibida.scopusUrl)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </div>
+      <div fxFlex fxLayout="row" fxLayoutAlign="start center" *ngIf="indicators.citaRecibida.webScienceCount">
+        <li fxFlex="200px">Web of Science</li>
+        <div fxFlex="200px">Número de citas: {{ indicators.citaRecibida.webScienceCount }}</div>
+        <div fxFlex="200px">Fecha: {{ indicators.citaRecibida.webScienceDate }}</div>
+        <button mat-icon-button style="color: #aa223c" [matTooltip]="'Ir a Web of Science'" (click)="openLink(indicators.citaRecibida.webScienceUrl)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </div>
+      <div fxFlex fxLayout="row" fxLayoutAlign="start center" *ngIf="indicators.citaRecibida.dimensionsCount">
+        <li fxFlex="200px">Dimensions</li>
+        <div fxFlex="200px">Número de citas: {{ indicators.citaRecibida.dimensionsCount }}</div>
+        <div fxFlex="200px">Fecha: {{ indicators.citaRecibida.dimensionsDate }}</div>
+        <button mat-icon-button style="color: #aa223c" [matTooltip]="'Ir a Dimensions'" (click)="openLink(indicators.citaRecibida.dimensionsUrl)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </div>
+    </div>
+  
+    <div fxFlex fxLayout="column" class="fondo" *ngIf="indicators.journalImpactFactor">
+      <h4 fxFlex>Journal Impact Factor - JIF</h4>
+      <div fxFlex fxLayout="column" fxLayoutAlign="center start">
+        <li>Año: {{ indicators.journalImpactFactor.year }}</li>
+        <li>Factor de impacto de la revista: {{ indicators.journalImpactFactor.magazineImpact }}</li>
+        <li>Factor de impacto sin autocitas: {{ indicators.journalImpactFactor.noAutoImpact }}</li>
+        <li>Cuartil mayor: {{ indicators.journalImpactFactor.majorQuartil }}</li>
+        <ng-container *ngIf="indicators.journalImpactFactor.journalImpactFactorAreas">
+          <li *ngFor="let area of indicators.journalImpactFactor.journalImpactFactorAreas"><strong>Área:</strong> {{ area.area }} <strong style="margin-left: 10px">Cuartil:</strong> {{ area.quartil }} <strong style="margin-left: 10px">Posición en el área:</strong> {{ area.position}}</li>
+        </ng-container>
+      </div>
+    </div>
+  
+    <div fxFlex fxLayout="column" class="fondo" *ngIf="indicators.journalCitationIndicator">
+      <h4 fxFlex>Journal Citation Indicator - JCI</h4>
+      <div fxFlex fxLayout="column" fxLayoutAlign="center start">
+        <li>Año: {{ indicators.journalCitationIndicator.year }}</li>
+        <li>JCI de la revista: {{ indicators.journalCitationIndicator.magazineJCI }}</li>
+        <li>Cuartil mayor: {{ indicators.journalCitationIndicator.majorQuartil }}</li>
+        <ng-container *ngIf="indicators.journalCitationIndicator.journalCitationIndicatorAreas">
+          <li *ngFor="let area of indicators.journalCitationIndicator.journalCitationIndicatorAreas"><strong>Área:</strong> {{ area.area }} <strong style="margin-left: 10px">Cuartil:</strong> {{ area.quartil }} <strong style="margin-left: 10px">Posición en el área:</strong> {{ area.position}}</li>
+        </ng-container>
+      </div>
+    </div>
+  
+    <div fxFlex fxLayout="column" class="fondo" *ngIf="indicators.scImagoJournalRank">
+      <h4 fxFlex>SCImago Journal Rank</h4>
+      <div fxFlex fxLayout="column" fxLayoutAlign="center start">
+        <li>Año: {{ indicators.scImagoJournalRank.year }}</li>
+        <li>Impacto SJR de la revista: {{ indicators.scImagoJournalRank.sjrImpactMagazine }}</li>
+        <li>Cuartil mayor: {{ indicators.scImagoJournalRank.majorQuartil }}</li>
+        <ng-container *ngIf="indicators.scImagoJournalRank.scImagoJournalRankAreas">
+          <li *ngFor="let area of indicators.scImagoJournalRank.scImagoJournalRankAreas"><strong>Área:</strong> {{ area.area }} <strong style="margin-left: 10px">Cuartil:</strong> {{ area.quartil }} <strong style="margin-left: 10px">Posición en el área:</strong> {{ area.position}}</li>
+        </ng-container>
+      </div>
+    </div>
+  
+    <div fxFlex fxLayout="column" class="fondo" *ngIf="indicators.scopusCitescore">
+      <h4 fxFlex>Scopus CiteScore</h4>
+      <div fxFlex fxLayout="column" fxLayoutAlign="center start">
+        <li>Año: {{ indicators.scopusCitescore.year }}</li>
+        <li>CiteScore de la revista: {{ indicators.scopusCitescore.magazineCitescore }}</li>
+        <ng-container *ngIf="indicators.scopusCitescore.scopusCitescoreAreas">
+          <li *ngFor="let area of indicators.scopusCitescore.scopusCitescoreAreas"><strong>Área:</strong> {{ area.area }} <strong style="margin-left: 10px">Percentil:</strong> {{ area.percentil }} </li>
+        </ng-container>
+      </div>
+    </div>
+  
+    <div fxFlex fxLayout="column" class="fondo" *ngIf="indicators.dimensions">
+      <h4 fxFlex>Dimensions</h4>
+      <div fxFlex fxLayout="column" fxLayoutAlign="center start">
+        <li>Field Citation Ratio: {{ indicators.dimensions.fieldCitationRatio }}</li>
+      </div>
+    </div>
+  
+    <div fxFlex fxLayout="column" class="fondo" *ngIf="indicators.dialnetRevista">
+      <h4 fxFlex>Índice Dialnet de Revistas</h4>
+      <div fxFlex fxLayout="column" fxLayoutAlign="center start">
+        <li>Año: {{ indicators.dialnetRevista.year }}</li>
+        <li>Impacto de la revista: {{ indicators.dialnetRevista.magazineImpact }}</li>
+        <li><strong>Ámbito:</strong> {{ indicators.dialnetRevista.ambit }} <strong style="margin-left: 10px">Cuartil:</strong> {{ indicators.dialnetRevista.quartil }} <strong style="margin-left: 10px">Posición en el ámbito:</strong> {{ indicators.dialnetRevista.position}}</li>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -264,6 +264,28 @@ namespace WebScrapingAPI.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpGet]
+        public ActionResult GetIndicadoresPublicacion([FromQuery] int idPublicacion)
+        {
+            var publicacionDB = _context.Publicaciones
+                .Include(x => x.CitaRecibida)
+                .Include(x => x.JournalImpactFactor)
+                    .ThenInclude(x => x.JournalImpactFactorAreas)
+                .Include(x => x.SCImagoJournalRank)
+                    .ThenInclude(x => x.SCImagoJournalRankAreas)
+                .Include(x => x.ScopusCitescore)
+                    .ThenInclude(x => x.ScopusCitescoreAreas)
+                .Include(x => x.JournalCitationIndicator)
+                    .ThenInclude(x => x.JournalCitationIndicatorAreas)
+                .Include(x => x.Dimensions)
+                .Include(x => x.DialnetRevista)
+                .FirstOrDefault(x => x.Id == idPublicacion);
+
+            return Ok(publicacionDB);
+
+        }
         }
 
 

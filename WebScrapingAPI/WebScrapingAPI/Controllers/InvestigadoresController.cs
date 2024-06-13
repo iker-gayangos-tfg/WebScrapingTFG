@@ -179,28 +179,24 @@ namespace WebScrapingAPI.Controllers
                     foreach(var investigadorGruposInvestigacionDB in investigadorGruposInvestigacionDBs)
                     {
                         _context.InvestigadoresGruposInvestigacion.Where(x => x.Id == investigadorGruposInvestigacionDB.Id).ExecuteDelete();
-                        _context.InvestigadoresGruposInvestigacion.Remove(investigadorGruposInvestigacionDB);
                     }
 
                     var investigadorProgramasDoctoradoDBs = _context.InvestigadoresProgramasDoctorado.Where(x => x.FoInvestigador == investigadorId);
                     foreach (var investigadorProgramasDoctoradoDB in investigadorProgramasDoctoradoDBs)
                     {
                         _context.InvestigadoresProgramasDoctorado.Where(x => x.Id == investigadorProgramasDoctoradoDB.Id).ExecuteDelete();
-                        _context.InvestigadoresProgramasDoctorado.Remove(investigadorProgramasDoctoradoDB);
                     }
 
                     var investigadorFacultadesDBs = _context.InvestigadoresFacultades.Where(x => x.FoInvestigador == investigadorId);
                     foreach (var investigadorFacultadesDB in investigadorFacultadesDBs)
                     {
                         _context.InvestigadoresFacultades.Where(x => x.Id == investigadorFacultadesDB.Id).ExecuteDelete();
-                        _context.InvestigadoresFacultades.Remove(investigadorFacultadesDB);
                     }
 
                     var investigadorAreasDBs = _context.InvestigadoresAreas.Where(x => x.FoInvestigador == investigadorId);
                     foreach (var investigadorAreasDB in investigadorAreasDBs)
                     {
                         _context.InvestigadoresAreas.Where(x => x.Id == investigadorAreasDB.Id).ExecuteDelete();
-                        _context.InvestigadoresAreas.Remove(investigadorAreasDB);
                     }
 
                     var investigadorPublicacionesDBs = _context.InvestigadoresPublicaciones.Where(x => x.FoInvestigador == investigadorId);
@@ -233,10 +229,11 @@ namespace WebScrapingAPI.Controllers
 
                     await _context.SaveChangesAsync();
                     _context.Investigadores.Where(x => x.Id == investigadorId).ExecuteDelete();
-                    _context.Investigadores.Remove(investigatorToUnbind);
-                    await _context.SaveChangesAsync();
 
                 }
+            }
+            return Ok();
+        }
 
 
             }

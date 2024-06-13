@@ -102,7 +102,8 @@ namespace WebScrapingAPI.Controllers
                         listaInvestigadores.Add(investigador);
                     }
                 }
-                var result = listaInvestigadores.OrderByDescending(x => x.Nombre);
+
+                var result = listaInvestigadores.OrderBy(x => x.Nombre == null || x.Nombre == "").ThenBy(x => x.Nombre).ToArray();
 
                 int total = result.Count();
 
@@ -110,7 +111,7 @@ namespace WebScrapingAPI.Controllers
 
             }else
             {
-                var result = investigadoresQueryable.OrderBy(x => x.Nombre);
+                var result = investigadoresQueryable.OrderBy(x => x.Nombre == null || x.Nombre == "").ThenBy(x => x.Nombre).ToArray();
 
                 int total = result.Count();
 

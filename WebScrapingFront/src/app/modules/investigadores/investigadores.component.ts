@@ -33,6 +33,8 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
   
   @ViewChild('investigadorInput') investigadorInput!: ElementRef<HTMLInputElement>;
 
+  isLoading = true;
+
   public selection: SelectionModel<any>;
 
   constructor(

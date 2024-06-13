@@ -1,3 +1,11 @@
+<div class="loading" *ngIf="isLoading">
+    <div fxFlex fxLayout="column" fxFill fxLayoutAlign="center center">
+        <mat-progress-spinner
+            color="#aa223c"
+            mode="indeterminate">
+        </mat-progress-spinner>
+    </div>
+</div>
 <div fxFlex fxLayout="column">
     <div fxFlex fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="start center">
         <div fxFlex="15" class="titulo">Investigadores</div>

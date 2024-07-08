@@ -22,7 +22,7 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
   investigadoresDatasource = [];
   totalInvestigadores = 0;
 
-  investigadorCtrl = new FormControl(null);
+  investigadorCtrl = new FormControl('a');
 
   investigadorNamesCtrl = new FormControl<any>(null);
   filteredInvestigadorNames!: Observable<any[]>;

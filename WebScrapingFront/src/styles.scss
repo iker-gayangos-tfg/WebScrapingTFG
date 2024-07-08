@@ -20,3 +20,21 @@ body {
 .sb-success { background-color: #569142; }
 .sb-error { background-color: #a70a2d; }
 .sb-info { background-color: #3785e5; }
+
+.loading {
+    font-weight: 100;
+    font-size: 105px !important;
+    margin: 0 !important;
+    line-height: 1.15 !important;
+    z-index: 2;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.65);
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff !important;
+}

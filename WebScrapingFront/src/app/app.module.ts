@@ -54,6 +54,10 @@ const ROUTES: Routes = [
     RouterModule.forRoot(ROUTES),
     
   ],
+  exports: [
+    NavbarComponent,
+    FooterComponent
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -24,14 +24,14 @@ const ROUTES: Routes = [
         path: 'investigadores',
         loadChildren: () => import('./modules/investigadores/investigadores.module').then(m => m.InvestigadoresModule)
       },
-      {
-        path: 'departamentos',
-        loadChildren: () => import('./modules/departamentos/departamentos.module').then(m => m.DepartamentosModule)
-      },
-      {
-        path: 'facultades',
-        loadChildren: () => import('./modules/facultades/facultades.module').then(m => m.FacultadesModule)
-      },
+      // {
+      //   path: 'departamentos',
+      //   loadChildren: () => import('./modules/departamentos/departamentos.module').then(m => m.DepartamentosModule)
+      // },
+      // {
+      //   path: 'facultades',
+      //   loadChildren: () => import('./modules/facultades/facultades.module').then(m => m.FacultadesModule)
+      // },
 
     ]
   },

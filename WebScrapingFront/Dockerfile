@@ -1,26 +1,12 @@
-# Utilizar una imagen de Node.js como base
-FROM node:latest AS builder
-
-# Establecer el directorio de trabajo en /app
+FROM node:18 AS build
 WORKDIR /app
-
-# Copiar los archivos de configuración
-COPY . .
-
-# Instalar las dependencias
+COPY package*.json ./
 RUN npm install
+COPY . .
+RUN npm run build --prod
 
-# Compilar la aplicación
-RUN npm run build
+FROM nginx:alpine
+COPY --from=build /app/dist/web-scraping-front/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Etapa de producción
-FROM nginx:latest
-
-# Copiar los archivos estáticos de compilación de la etapa de compilación a la ubicación de nginx
-COPY --from=builder /app/dist/* /usr/share/nginx/html/
-
-# Exponer el puerto 80 para el servidor nginx
 EXPOSE 80
-
-# Comando para ejecutar nginx en primer plano
-CMD ["nginx", "-g", "daemon off;"]

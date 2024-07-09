@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class WebScrapingService {
 
-  private apiUrl = 'https://localhost:44326/api';
+  private apiUrl = 'http://localhost:5000/api';
 
   constructor(private httpClient: HttpClient) { }
 

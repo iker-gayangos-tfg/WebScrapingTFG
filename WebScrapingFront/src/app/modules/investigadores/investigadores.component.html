@@ -1,0 +1,109 @@
+<div class="loading" *ngIf="isLoading">
+    <div fxFlex fxLayout="column" fxFill fxLayoutAlign="center center">
+        <mat-progress-spinner
+            color="#aa223c"
+            mode="indeterminate">
+        </mat-progress-spinner>
+    </div>
+</div>
+<div fxFlex fxLayout="column">
+    <div fxFlex fxLayout="row" fxLayoutGap="50px" fxLayoutAlign="start center">
+        <div fxFlex="15" class="titulo">Investigadores</div>
+        <mat-form-field fxFlex="15" fxLayoutAlign="center center" appearance="outline">
+            <mat-label>Investigador</mat-label>
+            <input matInput [formControl]="investigadorCtrl" autocomplete="off">
+        </mat-form-field>
+        <mat-form-field fxFlex fxLayoutAlign="center center" appearance="outline">
+            <mat-chip-grid #chipListInvestigadores style="width: 100%">
+                <mat-chip-row *ngFor="let investigador of investigadorNames" (removed)="removeInvestigador(investigador)">
+                    {{ investigador.fullName }}
+                    <mat-icon mat-icon-button matChipRemove>close</mat-icon>
+                </mat-chip-row>
+                <input
+                [placeholder]="'Investigadores relacionados'"
+                #investigadorInput
+                [formControl]="investigadorNamesCtrl"
+                [matAutocomplete]="autoInvestigadores"
+                [matChipInputFor]="chipListInvestigadores"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes">
+            </mat-chip-grid>
+            <mat-autocomplete #autoInvestigadores="matAutocomplete" (optionSelected)="selectedInvestigador($event)">
+                <mat-option *ngFor="let investigador of filteredInvestigadorNames | async" [value]="investigador">
+                    <span>{{ investigador.fullName }}</span>
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <button mat-button fxFlex="15" fxLayoutAlign="center center" class="btn-bind" [ngClass]="{'invisible': !selection.hasValue() || selection.selected.length < 2 }" (click)="bindInvestigators()">
+            <div>Fusionar investigadores</div>
+            <mat-icon>add_link</mat-icon>
+        </button>
+        <button mat-button fxFlex="13" fxLayoutAlign="center center" class="btn-bind" (click)="scraping()">
+            <div>Lanzar Web Scraping</div>
+            <mat-icon>memory</mat-icon>
+        </button>
+    </div>
+    <div class="cnt-margin">
+        <mat-table class="fondo" [dataSource]="investigadoresDatasource">
+            <ng-container matColumnDef="select">
+                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <mat-cell *matCellDef="let row" class="border-none">
+                  <mat-checkbox class="custom-checkbox" (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)">
+                  </mat-checkbox>
+                </mat-cell>
+              </ng-container>
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>Id</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.id }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="nombre">
+                <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.nombre }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="apellidos">
+                <mat-header-cell *matHeaderCellDef>Apellidos</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.apellidos }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="idInvestigador">
+                <mat-header-cell *matHeaderCellDef>IdInvestigador</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.idInvestigador }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="email">
+                <mat-header-cell *matHeaderCellDef>Email</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.email }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="departamento">
+                <mat-header-cell *matHeaderCellDef>Departamento</mat-header-cell> 
+                <mat-cell *matCellDef="let element">
+                    {{ element.departamento.name }} 
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef class="justify-center" class="actionsWidth">Acciones</mat-header-cell>
+                <mat-cell *matCellDef="let element" class="actionsWidth">
+                  <div fxLayout="row" fxFill fxLayoutAlign="center center">
+                    <button mat-icon-button style="color: #aa223c" [matTooltip]="'Ir a investigador'" (click)="openInvestigator(element)" *ngIf="element.idInvestigador">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+                    <button mat-icon-button style="color: #A9B0B4" [matTooltip]="'Ver publicaciones'" (click)="openView(element)">
+                      <mat-icon>chevron_right</mat-icon>
+                    </button>
+                  </div>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento', 'actions']"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: ['select', 'id', 'nombre', 'apellidos', 'idInvestigador', 'email', 'departamento', 'actions'];"></mat-row>
+        </mat-table>
+        <mat-paginator [length]="totalInvestigadores" [pageSize]="50" [pageSizeOptions]="[50, 100]" aria-label="Seleccionar página"></mat-paginator>
+    </div>
+</div>

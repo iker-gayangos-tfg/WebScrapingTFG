@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  angular-app:
+    build:
+      context: ./WebScrapingFront
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - dotnet-app
+
+  dotnet-app:
+    build:
+      context: ./WebScrapingAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=WebScrapingBd;User=sa;Password=Password123;
+    links:
+      - sqlserver
+    command: ["./migrate.sh"]
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "Password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserverdata:/var/opt/mssql
+
+volumes:
+  sqlserverdata:

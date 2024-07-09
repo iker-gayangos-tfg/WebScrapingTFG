@@ -1,0 +1,19 @@
+footer
+{
+    bottom: 0px;
+    min-height: 50px;
+    padding: .5rem 100px .5rem 100px;
+    background-color: #f4f4f4;
+}
+
+.flexContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 50px;
+}
+
+.flex {
+    flex-grow: 1
+}

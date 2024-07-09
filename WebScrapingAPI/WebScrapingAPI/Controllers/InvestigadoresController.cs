@@ -103,7 +103,8 @@ namespace WebScrapingAPI.Controllers
                     }
                 }
 
-                var result = listaInvestigadores.OrderBy(x => x.Nombre == null || x.Nombre == "").ThenBy(x => x.Nombre).ToArray();
+                //var result = listaInvestigadores.OrderBy(x => x.Nombre == null || x.Nombre == "").ThenBy(x => x.Nombre).ToArray();
+                var result = listaInvestigadores.OrderBy(x => x.Id).ToArray();
 
                 int total = result.Count();
 
@@ -111,7 +112,8 @@ namespace WebScrapingAPI.Controllers
 
             }else
             {
-                var result = investigadoresQueryable.OrderBy(x => x.Nombre == null || x.Nombre == "").ThenBy(x => x.Nombre).ToArray();
+                //var result = investigadoresQueryable.OrderBy(x => x.Nombre == null || x.Nombre == "").ThenBy(x => x.Nombre).ToArray();
+                var result = investigadoresQueryable.OrderBy(x => x.Id).ToArray();
 
                 int total = result.Count();
 

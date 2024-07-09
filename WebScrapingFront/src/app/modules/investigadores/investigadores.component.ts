@@ -87,6 +87,10 @@ export class InvestigadoresComponent implements OnInit, AfterViewInit{
     );
   }
 
+  scraping() {
+    this.webScrapingService.scraping().subscribe();
+  }
+
   loadLists() {
     this.webScrapingService.getInvestigadoresList().subscribe(
       res => {

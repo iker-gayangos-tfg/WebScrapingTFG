@@ -37,6 +37,10 @@
             <div>Fusionar investigadores</div>
             <mat-icon>add_link</mat-icon>
         </button>
+        <button mat-button fxFlex="13" fxLayoutAlign="center center" class="btn-bind" (click)="scraping()">
+            <div>Lanzar Web Scraping</div>
+            <mat-icon>memory</mat-icon>
+        </button>
     </div>
     <div class="cnt-margin">
         <mat-table class="fondo" [dataSource]="investigadoresDatasource">

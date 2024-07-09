@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class WebScrapingService {
 
-  private apiUrl = 'https://localhost:44326/api';
+  private apiUrl = 'http://localhost:5000/api';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -45,6 +45,10 @@ export class WebScrapingService {
     return this.httpClient.get<any>(`${this.apiUrl}/Investigadores/GetPublicacionesInvestigadorCompleto`, {
       params: data
     });
+  }
+
+  scraping() {
+    return this.httpClient.get<any>(`${this.apiUrl}/WebScraping/Scraping`);
   }
   
 }
